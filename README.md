@@ -11,7 +11,7 @@
 ---
 
 ## 📸 Screenshots
-*(Add your screenshots here later)*
+*will be add letar*
 ---
 
 ## ⚡ Key Features
