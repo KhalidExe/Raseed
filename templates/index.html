@@ -1,0 +1,55 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
+    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-red-500">
+        <h2 class="text-lg font-bold mb-4">⚠️ تنبيهات الاستحقاق (15 يوم)</h2>
+        {% if alerts %}
+            <ul class="space-y-3">
+            {% for a in alerts %}
+                <li class="flex justify-between items-center bg-red-50 p-3 rounded-lg">
+                    <div>
+                        <span class="font-bold">{{ a['name'] }}</span>
+                        <span class="text-xs text-gray-500 block">{{ a['unit_name'] }}</span>
+                    </div>
+                    <div class="text-center">
+                        <div class="text-red-600 font-bold text-sm">{{ a['due_date'] }}</div>
+                        <div class="text-xs font-semibold bg-red-200 text-red-800 px-2 rounded-full">{{ "{:,.0f}".format(a['remaining']) }} ريال</div>
+                    </div>
+                </li>
+            {% endfor %}
+            </ul>
+        {% else %}
+            <p class="text-green-600 font-bold text-center mt-4">ممتاز! لا توجد متأخرات.</p>
+        {% endif %}
+    </div>
+
+    <div class="bg-white p-6 rounded-xl shadow-md border-t-4 border-blue-500">
+        <h2 class="text-lg font-bold mb-4">➕ إضافة مستأجر جديد</h2>
+        <form action="/add_tenant" method="POST" class="space-y-4">
+            <input type="text" name="name" placeholder="اسم المستأجر" class="w-full p-3 bg-gray-50 border rounded-lg" required>
+            <input type="text" name="unit" placeholder="رقم الوحدة" class="w-full p-3 bg-gray-50 border rounded-lg" required>
+            <button type="submit" class="w-full bg-blue-600 text-white p-3 rounded-lg hover:bg-blue-700 font-bold">إضافة</button>
+        </form>
+    </div>
+</div>
+
+<h2 class="text-2xl font-bold mb-6 text-gray-800">📋 قائمة العقارات</h2>
+<div class="grid grid-cols-1 md:grid-cols-3 gap-6">
+    {% for t in tenants %}
+    <a href="/tenant/{{ t['id'] }}" class="block group">
+        <div class="bg-white p-6 rounded-xl shadow-md hover:shadow-xl transition border border-gray-100">
+            <div class="mb-4">
+                <h3 class="text-xl font-bold text-gray-800 group-hover:text-blue-600">{{ t['name'] }}</h3>
+                <p class="text-sm text-gray-500">{{ t['unit_name'] }}</p>
+            </div>
+            <div class="w-full bg-gray-200 rounded-full h-2">
+                {% set percent = (t['completed_installments'] / t['total_installments'] * 100) if t['total_installments'] > 0 else 0 %}
+                <div class="bg-blue-600 h-2 rounded-full" style="width: {{ percent }}%"></div>
+            </div>
+            <p class="text-xs text-gray-400 mt-2 text-left">{{ t['completed_installments'] }} / {{ t['total_installments'] }} دفعات</p>
+        </div>
+    </a>
+    {% endfor %}
+</div>
+{% endblock %}

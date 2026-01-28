@@ -1,0 +1,76 @@
+{% extends 'base.html' %}
+{% block content %}
+
+<div class="flex justify-between items-center mb-8">
+    <div>
+        <h1 class="text-3xl font-bold text-gray-900">{{ tenant['name'] }}</h1>
+        <p class="text-gray-500 text-lg">🏠 {{ tenant['unit_name'] }}</p>
+    </div>
+    <div class="flex gap-2">
+        <a href="/delete_tenant/{{ tenant['id'] }}" onclick="return confirm('حذف نهائي؟')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold">حذف</a>
+        <a href="/" class="bg-slate-800 text-white px-5 py-2 rounded-lg font-bold">عودة</a>
+    </div>
+</div>
+
+{% if not installments %}
+<div class="bg-yellow-50 border border-yellow-200 p-8 rounded-xl text-center mb-8">
+    <h3 class="text-xl font-bold text-gray-800 mb-2">لا يوجد جدول دفعات</h3>
+    <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex flex-col items-center gap-4 mt-4">
+        <input type="file" name="file" accept=".xlsx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 max-w-xs">
+        <button type="submit" class="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 font-bold">رفع ملف الإكسل 📤</button>
+    </form>
+</div>
+{% else %}
+<div class="flex justify-end mb-4">
+    <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex gap-2 items-center">
+       <input type="file" name="file" accept=".xlsx" class="text-xs text-gray-400">
+       <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-xs font-bold">+ إكسل</button>
+   </form>
+</div>
+{% endif %}
+
+<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
+    <div class="p-4 bg-gray-50 font-bold text-gray-700">📒 سجل الدفعات</div>
+    <div class="overflow-x-auto">
+        <table class="min-w-full">
+            <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
+                <tr>
+                    <th class="px-6 py-4 text-start">التاريخ</th>
+                    <th class="px-6 py-4 text-start">القيمة</th>
+                    <th class="px-6 py-4 text-start">المدفوع</th>
+                    <th class="px-6 py-4 text-start">المتبقي</th>
+                    <th class="px-6 py-4 text-start">الإجراء</th>
+                </tr>
+            </thead>
+            <tbody class="divide-y divide-gray-100">
+                {% for inst in installments %}
+                {% set rem = inst['amount'] - inst['paid'] %}
+                {% set is_done = rem <= 0.1 %}
+                <tr class="hover:bg-gray-50 {% if is_done %}bg-green-50/30{% endif %}">
+                    <td class="px-6 py-4 font-medium">{{ inst['due_date'] }}</td>
+                    <td class="px-6 py-4">
+                        <form action="/update_total/{{ inst['id'] }}" method="POST">
+                            <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
+                            <input type="number" name="new_total" value="{{ inst['amount'] }}" class="w-20 bg-transparent border-b focus:outline-none">
+                        </form>
+                    </td>
+                    <td class="px-6 py-4 text-green-600 font-bold">{{ "{:,.0f}".format(inst['paid']) }}</td>
+                    <td class="px-6 py-4 font-bold text-red-500">{{ "{:,.0f}".format(rem) }}</td>
+                    <td class="px-6 py-4">
+                        {% if not is_done %}
+                        <form action="/pay/{{ inst['id'] }}" method="POST" class="flex gap-2">
+                            <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
+                            <input type="number" name="amount" value="{{ rem }}" max="{{ rem }}" class="w-20 border rounded px-2 py-1 text-sm">
+                            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold">سداد</button>
+                        </form>
+                        {% else %}
+                        <span class="text-green-600 font-bold text-sm">✅ خالص</span>
+                        {% endif %}
+                    </td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+    </div>
+</div>
+{% endblock %}
