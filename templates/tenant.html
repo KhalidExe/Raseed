@@ -1,76 +1,152 @@
 {% extends 'base.html' %}
+
 {% block content %}
 
-<div class="flex justify-between items-center mb-8">
-    <div>
-        <h1 class="text-3xl font-bold text-gray-900">{{ tenant['name'] }}</h1>
-        <p class="text-gray-500 text-lg">🏠 {{ tenant['unit_name'] }}</p>
-    </div>
-    <div class="flex gap-2">
-        <a href="/delete_tenant/{{ tenant['id'] }}" onclick="return confirm('حذف نهائي؟')" class="bg-red-100 text-red-600 px-4 py-2 rounded-lg font-bold">حذف</a>
-        <a href="/" class="bg-slate-800 text-white px-5 py-2 rounded-lg font-bold">عودة</a>
+<div class="relative bg-slate-900 pb-32 pt-24 lg:pt-32 rounded-b-[3rem] shadow-2xl overflow-hidden">
+    <div class="absolute top-0 right-0 w-full h-full bg-gradient-to-br from-blue-900/20 to-transparent"></div>
+    <div class="absolute -top-24 -left-24 w-96 h-96 bg-blue-600/10 rounded-full blur-3xl"></div>
+
+    <div class="container mx-auto px-4 relative z-10">
+        <div class="flex flex-col md:flex-row justify-between items-center gap-6">
+            
+            <div class="text-center md:text-right">
+                <div class="flex items-center gap-3 justify-center md:justify-start mb-2">
+                    <h1 class="text-4xl font-extrabold text-white tracking-tight">{{ tenant['name'] }}</h1>
+                    <span class="bg-blue-500/20 text-blue-200 text-xs font-bold px-3 py-1 rounded-full border border-blue-500/30">نشط</span>
+                </div>
+                <p class="text-slate-300 text-lg flex items-center justify-center md:justify-start gap-2">
+                    <span class="p-1 bg-white/10 rounded text-slate-200">
+                        <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4"></path></svg>
+                    </span>
+                    {{ tenant['unit_name'] }}
+                </p>
+            </div>
+
+            <div class="flex gap-3">
+                <a href="/" class="group flex items-center gap-2 px-6 py-3 rounded-xl bg-white/5 hover:bg-white/10 border border-white/10 text-white font-bold backdrop-blur-sm transition-all">
+                    <svg class="w-4 h-4 group-hover:-translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path></svg>
+                    عودة للرئيسية
+                </a>
+                <a href="/delete_tenant/{{ tenant['id'] }}" onclick="return confirm('هل أنت متأكد من حذف العقد وجميع السجلات المالية؟ لا يمكن التراجع.')" class="flex items-center gap-2 px-6 py-3 rounded-xl bg-rose-500/90 hover:bg-rose-600 text-white font-bold shadow-lg shadow-rose-900/20 transition-all border border-rose-400/50">
+                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16"></path></svg>
+                    حذف العقد
+                </a>
+            </div>
+        </div>
     </div>
 </div>
 
-{% if not installments %}
-<div class="bg-yellow-50 border border-yellow-200 p-8 rounded-xl text-center mb-8">
-    <h3 class="text-xl font-bold text-gray-800 mb-2">لا يوجد جدول دفعات</h3>
-    <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex flex-col items-center gap-4 mt-4">
-        <input type="file" name="file" accept=".xlsx" class="block w-full text-sm text-gray-500 file:mr-4 file:py-2 file:px-4 file:rounded-full file:bg-blue-50 file:text-blue-700 hover:file:bg-blue-100 max-w-xs">
-        <button type="submit" class="bg-blue-600 text-white px-8 py-2 rounded-lg hover:bg-blue-700 font-bold">رفع ملف الإكسل 📤</button>
-    </form>
-</div>
-{% else %}
-<div class="flex justify-end mb-4">
-    <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex gap-2 items-center">
-       <input type="file" name="file" accept=".xlsx" class="text-xs text-gray-400">
-       <button type="submit" class="bg-gray-200 hover:bg-gray-300 text-gray-700 px-3 py-1 rounded text-xs font-bold">+ إكسل</button>
-   </form>
-</div>
-{% endif %}
+<div class="container mx-auto px-4 -mt-20 relative z-20 pb-12">
+    
+    {% if not installments %}
+    <div class="bg-white rounded-3xl shadow-xl p-10 text-center border border-slate-100 max-w-2xl mx-auto mb-8">
+        <div class="w-20 h-20 bg-blue-50 rounded-full flex items-center justify-center mx-auto mb-4">
+            <svg class="w-10 h-10 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"></path></svg>
+        </div>
+        <h3 class="text-xl font-bold text-slate-800 mb-2">لا يوجد جدول دفعات مسجل</h3>
+        <p class="text-slate-500 mb-6">قم برفع ملف Excel يحتوي على تفاصيل الأقساط لإنشاء الجدول</p>
+        
+        <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex flex-col items-center gap-4">
+            <label class="block w-full">
+                <span class="sr-only">اختر ملف</span>
+                <input type="file" name="file" accept=".xlsx" class="block w-full text-sm text-slate-500
+                  file:mr-4 file:py-3 file:px-6
+                  file:rounded-full file:border-0
+                  file:text-sm file:font-bold
+                  file:bg-blue-50 file:text-blue-700
+                  hover:file:bg-blue-100 transition-colors cursor-pointer
+                "/>
+            </label>
+            <button type="submit" class="bg-slate-900 text-white px-8 py-3 rounded-xl hover:bg-blue-600 font-bold w-full transition-colors shadow-lg">رفع وإنشاء الجدول 📤</button>
+        </form>
+    </div>
+    {% else %}
+    <div class="flex justify-end mb-4">
+        <form action="/upload_excel/{{ tenant['id'] }}" method="POST" enctype="multipart/form-data" class="flex gap-2 items-center bg-white p-2 rounded-xl shadow-sm border border-slate-100">
+           <input type="file" name="file" accept=".xlsx" class="text-xs text-slate-400 file:mr-2 file:py-1 file:px-3 file:rounded-lg file:border-0 file:text-xs file:font-bold file:bg-slate-100 file:text-slate-600 hover:file:bg-slate-200 cursor-pointer">
+           <button type="submit" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-xs font-bold hover:bg-slate-700 transition-colors">+ تحديث البيانات</button>
+       </form>
+    </div>
+    {% endif %}
 
-<div class="bg-white rounded-xl shadow-lg border border-gray-100 overflow-hidden">
-    <div class="p-4 bg-gray-50 font-bold text-gray-700">📒 سجل الدفعات</div>
-    <div class="overflow-x-auto">
-        <table class="min-w-full">
-            <thead class="bg-gray-50 text-gray-500 text-xs uppercase font-semibold">
-                <tr>
-                    <th class="px-6 py-4 text-start">التاريخ</th>
-                    <th class="px-6 py-4 text-start">القيمة</th>
-                    <th class="px-6 py-4 text-start">المدفوع</th>
-                    <th class="px-6 py-4 text-start">المتبقي</th>
-                    <th class="px-6 py-4 text-start">الإجراء</th>
-                </tr>
-            </thead>
-            <tbody class="divide-y divide-gray-100">
-                {% for inst in installments %}
-                {% set rem = inst['amount'] - inst['paid'] %}
-                {% set is_done = rem <= 0.1 %}
-                <tr class="hover:bg-gray-50 {% if is_done %}bg-green-50/30{% endif %}">
-                    <td class="px-6 py-4 font-medium">{{ inst['due_date'] }}</td>
-                    <td class="px-6 py-4">
-                        <form action="/update_total/{{ inst['id'] }}" method="POST">
-                            <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
-                            <input type="number" name="new_total" value="{{ inst['amount'] }}" class="w-20 bg-transparent border-b focus:outline-none">
-                        </form>
-                    </td>
-                    <td class="px-6 py-4 text-green-600 font-bold">{{ "{:,.0f}".format(inst['paid']) }}</td>
-                    <td class="px-6 py-4 font-bold text-red-500">{{ "{:,.0f}".format(rem) }}</td>
-                    <td class="px-6 py-4">
-                        {% if not is_done %}
-                        <form action="/pay/{{ inst['id'] }}" method="POST" class="flex gap-2">
-                            <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
-                            <input type="number" name="amount" value="{{ rem }}" max="{{ rem }}" class="w-20 border rounded px-2 py-1 text-sm">
-                            <button type="submit" class="bg-blue-600 text-white px-3 py-1 rounded text-sm font-bold">سداد</button>
-                        </form>
-                        {% else %}
-                        <span class="text-green-600 font-bold text-sm">✅ خالص</span>
-                        {% endif %}
-                    </td>
-                </tr>
-                {% endfor %}
-            </tbody>
-        </table>
+    <div class="bg-white rounded-3xl shadow-xl border border-slate-100 overflow-hidden">
+        <div class="p-6 border-b border-slate-50 bg-slate-50/50 flex justify-between items-center">
+            <h3 class="font-bold text-slate-800 text-lg flex items-center gap-2">
+                <span class="w-2 h-6 bg-blue-500 rounded-full"></span>
+                سجل الدفعات المالية
+            </h3>
+            <span class="text-xs font-bold text-slate-400 bg-white px-3 py-1 rounded-full border border-slate-100 shadow-sm">{{ installments|length }} قسط</span>
+        </div>
+        
+        <div class="overflow-x-auto">
+            <table class="min-w-full">
+                <thead class="bg-white text-slate-500 text-xs uppercase font-bold tracking-wider border-b border-slate-50">
+                    <tr>
+                        <th class="px-6 py-5 text-start">تاريخ الاستحقاق</th>
+                        <th class="px-6 py-5 text-start">قيمة القسط</th>
+                        <th class="px-6 py-5 text-start">المدفوع</th>
+                        <th class="px-6 py-5 text-start">المتبقي</th>
+                        <th class="px-6 py-5 text-start">الحالة / الإجراء</th>
+                    </tr>
+                </thead>
+                <tbody class="divide-y divide-slate-50">
+                    {% for inst in installments %}
+                    {% set rem = inst['amount'] - inst['paid'] %}
+                    {% set is_done = rem <= 0.1 %}
+                    <tr class="hover:bg-blue-50/30 transition-colors group">
+                        
+                        <td class="px-6 py-4">
+                            <div class="flex items-center gap-2">
+                                <div class="p-2 rounded-lg bg-slate-50 text-slate-400 group-hover:bg-white group-hover:text-blue-500 transition-colors">
+                                    <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 7V3m8 4V3m-9 8h10M5 21h14a2 2 0 002-2V7a2 2 0 00-2-2H5a2 2 0 00-2 2v12a2 2 0 002 2z"></path></svg>
+                                </div>
+                                <span class="font-bold text-slate-700 font-mono text-sm">{{ inst['due_date'] }}</span>
+                            </div>
+                        </td>
+
+                        <td class="px-6 py-4">
+                            <form action="/update_total/{{ inst['id'] }}" method="POST" class="relative group/input">
+                                <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
+                                <input type="number" name="new_total" value="{{ inst['amount'] }}" class="w-28 bg-transparent border border-transparent hover:border-slate-200 focus:bg-white focus:border-blue-500 focus:ring-2 focus:ring-blue-100 rounded-lg px-2 py-1 font-mono font-bold text-slate-700 outline-none transition-all">
+                                <span class="text-xs text-slate-400 absolute left-2 top-2 opacity-0 group-hover/input:opacity-100 transition-opacity pointer-events-none">SAR</span>
+                            </form>
+                        </td>
+
+                        <td class="px-6 py-4">
+                             <span class="text-emerald-600 font-black font-mono bg-emerald-50 px-3 py-1 rounded-lg">{{ "{:,.0f}".format(inst['paid']) }}</span>
+                        </td>
+
+                        <td class="px-6 py-4 font-bold font-mono">
+                            {% if rem > 0 %}
+                                <span class="text-rose-500">{{ "{:,.0f}".format(rem) }}</span>
+                            {% else %}
+                                <span class="text-slate-300">0</span>
+                            {% endif %}
+                        </td>
+
+                        <td class="px-6 py-4">
+                            {% if not is_done %}
+                            <form action="/pay/{{ inst['id'] }}" method="POST" class="flex items-center gap-2">
+                                <input type="hidden" name="t_id" value="{{ tenant['id'] }}">
+                                <div class="relative">
+                                    <span class="absolute right-3 top-1.5 text-slate-400 text-xs font-bold">SAR</span>
+                                    <input type="number" name="amount" value="{{ rem }}" max="{{ rem }}" class="w-24 pl-2 pr-10 py-1.5 bg-slate-50 border border-slate-200 rounded-lg text-sm font-bold text-slate-700 focus:ring-2 focus:ring-blue-500 focus:border-transparent outline-none transition-all">
+                                </div>
+                                <button type="submit" class="bg-slate-800 text-white px-4 py-1.5 rounded-lg text-sm font-bold hover:bg-blue-600 hover:shadow-lg hover:shadow-blue-500/30 transition-all">سداد</button>
+                            </form>
+                            {% else %}
+                            <span class="inline-flex items-center gap-1.5 text-emerald-600 bg-emerald-50 px-3 py-1.5 rounded-full text-xs font-bold border border-emerald-100">
+                                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="3" d="M5 13l4 4L19 7"></path></svg>
+                                مكتمل
+                            </span>
+                            {% endif %}
+                        </td>
+                    </tr>
+                    {% endfor %}
+                </tbody>
+            </table>
+        </div>
     </div>
 </div>
+
 {% endblock %}
