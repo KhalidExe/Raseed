@@ -5,7 +5,7 @@ DB_NAME = "real_estate.db"
 
 def get_db():
     conn = sqlite3.connect(DB_NAME)
-    conn.row_factory = sqlite3.Row  # <--- هذا السطر هو الحل السحري
+    conn.row_factory = sqlite3.Row
     return conn
 
 def init_db():
@@ -40,7 +40,6 @@ def add_tenant(name, unit):
 
 def get_dashboard_data():
     conn = get_db()
-    # جلب البيانات وتحويلها لقواميس
     rows = conn.execute("""
         SELECT t.*, 
         (SELECT COUNT(*) FROM installments WHERE tenant_id=t.id) as total_installments,
@@ -48,10 +47,8 @@ def get_dashboard_data():
         FROM tenants t
         ORDER BY t.created_at DESC
     """).fetchall()
+    tenants = [dict(row) for row in rows]
     
-    tenants = [dict(row) for row in rows] # <--- تحويل النتائج
-    
-    # جلب التنبيهات
     target_date = (datetime.now() + timedelta(days=15)).strftime("%Y-%m-%d")
     alert_rows = conn.execute("""
         SELECT t.name, t.unit_name, i.due_date, (i.amount - i.paid) as remaining
@@ -60,8 +57,7 @@ def get_dashboard_data():
         WHERE i.due_date <= ? AND (i.amount - i.paid) > 1
         ORDER BY i.due_date ASC
     """, (target_date,)).fetchall()
-    
-    alerts = [dict(row) for row in alert_rows] # <--- تحويل النتائج
+    alerts = [dict(row) for row in alert_rows]
     
     conn.close()
     return tenants, alerts
@@ -90,6 +86,7 @@ def add_installments_from_excel(tenant_id, data_list):
             d_str = date_val.strftime("%Y-%m-%d")
         else:
             d_str = str(date_val).split(" ")[0]
+            
         conn.execute("INSERT INTO installments (tenant_id, due_date, amount, paid) VALUES (?, ?, ?, 0)",
                      (tenant_id, d_str, float(amount)))
     conn.commit()
