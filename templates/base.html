@@ -9,36 +9,33 @@
     <style>
         html {
             background-color: #0f172a;
-            height: 100%;
         }
         body { 
             font-family: 'Tajawal', sans-serif;
-            background: linear-gradient(to bottom, #0f172a 0%, #0f172a 500px, #f3f4f6 500px, #f3f4f6 100%);
-            background-repeat: no-repeat;
-            background-attachment: fixed;
+            background-color: #0f172a;
+            color: #f8fafc;
             min-height: 100vh;
-            overflow-x: hidden;
             display: flex;
             flex-direction: column;
         }
         ::-webkit-scrollbar { width: 8px; }
         ::-webkit-scrollbar-track { background: #0f172a; }
-        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; border: 2px solid #0f172a; }
+        ::-webkit-scrollbar-thumb { background: #334155; border-radius: 4px; }
         ::-webkit-scrollbar-thumb:hover { background: #475569; }
     </style>
     {% block head %}{% endblock %}
 </head>
 <body>
     
-    <nav class="absolute top-0 left-0 w-full z-50 p-6">
+    <nav class="w-full z-50 p-6">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-white hover:text-blue-200 transition-colors">
-                <span class="text-3xl drop-shadow-md">💳</span> 
-                <span class="drop-shadow-md">رصيد</span>
+            <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-white hover:text-blue-400 transition-colors">
+                <span class="text-3xl drop-shadow-lg">💳</span> 
+                <span class="drop-shadow-lg">رصيد</span>
             </a>
             
             <div class="hidden md:flex items-center gap-4">
-                <div class="text-[10px] font-bold tracking-widest text-slate-400 uppercase bg-slate-800/50 px-3 py-1 rounded-full border border-white/5 backdrop-blur-md">
+                <div class="text-[10px] font-bold tracking-widest text-slate-400 uppercase bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
                     Secure Dashboard
                 </div>
             </div>
@@ -46,10 +43,21 @@
     </nav>
 
     <main class="flex-grow w-full relative">
+        <div class="container mx-auto px-4 mt-4">
+        {% with messages = get_flashed_messages(with_categories=true) %}
+            {% if messages %}
+                {% for category, message in messages %}
+                <div class="mb-4 p-4 rounded-xl border {% if category == 'success' %}bg-emerald-900/20 border-emerald-500/20 text-emerald-400{% elif category == 'danger' %}bg-rose-900/20 border-rose-500/20 text-rose-400{% else %}bg-blue-900/20 border-blue-500/20 text-blue-400{% endif %}">
+                    {{ message }}
+                </div>
+                {% endfor %}
+            {% endif %}
+        {% endwith %}
+        </div>
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="py-6 text-center text-slate-400 text-xs mt-auto">
+    <footer class="py-6 text-center text-slate-500 text-xs mt-auto border-t border-slate-800/50">
         &copy; 2026 نظام رصيد العقاري
     </footer>
 
