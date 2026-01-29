@@ -11,7 +11,8 @@
 ---
 
 ## 📸 Screenshots
-*will be add letar*
+*(Screenshots coming soon...)*
+
 ---
 
 ## ⚡ Key Features
@@ -78,7 +79,7 @@ Raseed/
 │   ├── index.html         # Dashboard & Alerts
 │   └── tenant.html        # Ledger & Excel Upload
 │
-└── real_estate.db         # Auto-generated Database
+└── real_estate.db         # (Auto-generated Database)
 ```
 ---
 
