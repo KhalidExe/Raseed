@@ -1,13 +1,15 @@
 from flask import Flask, render_template, request, redirect, url_for, flash
 import database as db
 import pandas as pd
-from datetime import datetime
 import os
 
 app = Flask(__name__)
 app.secret_key = "raseed_production_secret_key"
 
-db.init_db()
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///real_estate.db'
+app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
+
+db.init_db(app)
 
 @app.route('/')
 def index():
@@ -28,6 +30,8 @@ def add_tenant():
 @app.route('/tenant/<int:t_id>')
 def tenant_details(t_id):
     tenant, installments = db.get_tenant_details(t_id)
+    if not tenant:
+        return redirect(url_for('index'))
     return render_template('tenant.html', tenant=tenant, installments=installments)
 
 @app.route('/upload_excel/<int:t_id>', methods=['POST'])
@@ -38,16 +42,20 @@ def upload_excel(t_id):
             df = pd.read_excel(file)
             df.columns = df.columns.str.strip().str.lower()
             
-            date_col = next((c for c in df.columns if 'date' in c or 'تاريخ' in c), df.columns[0])
-            amount_col = next((c for c in df.columns if 'amount' in c or 'price' in c or 'مبلغ' in c), df.columns[1])
+            date_col = next((c for c in df.columns if 'date' in c or 'تاريخ' in c), None)
+            amount_col = next((c for c in df.columns if 'amount' in c or 'price' in c or 'مبلغ' in c), None)
 
-            data_list = []
-            for _, row in df.iterrows():
-                if pd.notna(row[date_col]) and pd.notna(row[amount_col]):
-                    data_list.append((row[date_col], row[amount_col]))
-            
-            db.add_installments_from_excel(t_id, data_list)
-            flash('تم رفع جدول الدفعات بنجاح', 'success')
+            if date_col and amount_col:
+                data_list = []
+                for _, row in df.iterrows():
+                    if pd.notna(row[date_col]) and pd.notna(row[amount_col]):
+                        data_list.append((row[date_col], row[amount_col]))
+                
+                db.add_installments_from_excel(t_id, data_list)
+                flash('تم رفع جدول الدفعات بنجاح', 'success')
+            else:
+                flash('الملف لا يحتوي على الأعمدة المطلوبة', 'danger')
+
         except Exception as e:
             flash(f'حدث خطأ أثناء المعالجة: {e}', 'danger')
             
@@ -58,12 +66,11 @@ def pay_installment(inst_id):
     paid_now = float(request.form['amount'])
     t_id = request.form['t_id']
     
-    conn = db.get_db()
-    row = conn.execute("SELECT paid FROM installments WHERE id=?", (inst_id,)).fetchone()
-    if row:
-        new_paid = row['paid'] + paid_now
+    conn = db.db.session
+    inst = db.Installment.query.get(inst_id)
+    if inst:
+        new_paid = inst.paid + paid_now
         db.update_installment(inst_id, paid=new_paid)
-        conn.close()
         
     flash('تم تسجيل الدفعة بنجاح', 'success')
     return redirect(url_for('tenant_details', t_id=t_id))

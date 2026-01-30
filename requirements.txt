@@ -1,3 +1,6 @@
-flask
+Flask
 pandas
 openpyxl
+Flask-SQLAlchemy
+psycopg2-binary
+Flask-Login
