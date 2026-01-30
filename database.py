@@ -1,13 +1,29 @@
 from flask_sqlalchemy import SQLAlchemy
+from flask_login import UserMixin
 from datetime import datetime, timedelta
-from sqlalchemy import func
+from werkzeug.security import generate_password_hash, check_password_hash
 
 db = SQLAlchemy()
+
+class User(UserMixin, db.Model):
+    __tablename__ = 'users'
+    id = db.Column(db.Integer, primary_key=True)
+    name = db.Column(db.String(100))
+    email = db.Column(db.String(100), unique=True, nullable=False)
+    password_hash = db.Column(db.String(200))
+    tenants = db.relationship('Tenant', backref='owner', lazy=True)
+
+    def set_password(self, password):
+        self.password_hash = generate_password_hash(password)
+
+    def check_password(self, password):
+        return check_password_hash(self.password_hash, password)
 
 class Tenant(db.Model):
     __tablename__ = 'tenants'
     id = db.Column(db.Integer, primary_key=True)
-    name = db.Column(db.String(100), unique=True, nullable=False)
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
+    name = db.Column(db.String(100), nullable=False)
     unit_name = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
     installments = db.relationship('Installment', backref='tenant', cascade='all, delete-orphan')
@@ -44,10 +60,21 @@ def init_db(app):
     db.init_app(app)
     with app.app_context():
         db.create_all()
+        # Create a dummy user for testing if not exists
+        if not User.query.first():
+            dummy = User(name="Demo User", email="demo@raseed.com")
+            dummy.set_password("123456")
+            db.session.add(dummy)
+            db.session.commit()
 
-def add_tenant(name, unit):
+def add_tenant(user_id, name, unit):
     try:
-        new_tenant = Tenant(name=name, unit_name=unit)
+        # Check if tenant name exists for THIS user
+        exists = Tenant.query.filter_by(user_id=user_id, name=name).first()
+        if exists:
+            return False
+            
+        new_tenant = Tenant(user_id=user_id, name=name, unit_name=unit)
         db.session.add(new_tenant)
         db.session.commit()
         return True
@@ -55,13 +82,14 @@ def add_tenant(name, unit):
         db.session.rollback()
         return False
 
-def get_dashboard_data():
-    tenants_objs = Tenant.query.order_by(Tenant.created_at.desc()).all()
+def get_dashboard_data(user_id):
+    tenants_objs = Tenant.query.filter_by(user_id=user_id).order_by(Tenant.created_at.desc()).all()
     tenants = [t.to_dict() for t in tenants_objs]
     
     target_date = datetime.now().date() + timedelta(days=15)
     
     upcoming_installments = db.session.query(Installment, Tenant).join(Tenant).filter(
+        Tenant.user_id == user_id,
         Installment.due_date <= target_date,
         (Installment.amount - Installment.paid) > 1
     ).order_by(Installment.due_date).all()
@@ -77,14 +105,14 @@ def get_dashboard_data():
         
     return tenants, alerts
 
-def delete_tenant(t_id):
-    tenant = Tenant.query.get(t_id)
+def delete_tenant(t_id, user_id):
+    tenant = Tenant.query.filter_by(id=t_id, user_id=user_id).first()
     if tenant:
         db.session.delete(tenant)
         db.session.commit()
 
-def get_tenant_details(t_id):
-    tenant_obj = Tenant.query.get(t_id)
+def get_tenant_details(t_id, user_id):
+    tenant_obj = Tenant.query.filter_by(id=t_id, user_id=user_id).first()
     if not tenant_obj:
         return None, []
     

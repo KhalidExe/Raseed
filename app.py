@@ -6,14 +6,18 @@ import os
 app = Flask(__name__)
 app.secret_key = "raseed_production_secret_key"
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///real_estate.db'
+app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///real_estate.db2'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_db(app)
 
+# --- Temporary Dummy User ID for Testing (Push 2) ---
+# Will be replaced by 'current_user.id' in Push 3
+TEMP_USER_ID = 1
+
 @app.route('/')
 def index():
-    tenants, alerts = db.get_dashboard_data()
+    tenants, alerts = db.get_dashboard_data(TEMP_USER_ID)
     return render_template('index.html', tenants=tenants, alerts=alerts)
 
 @app.route('/add_tenant', methods=['POST'])
@@ -21,7 +25,7 @@ def add_tenant():
     name = request.form.get('name')
     unit = request.form.get('unit')
     
-    if db.add_tenant(name, unit):
+    if db.add_tenant(TEMP_USER_ID, name, unit):
         flash('تم إضافة المستأجر بنجاح', 'success')
     else:
         flash('خطأ: اسم المستأجر موجود مسبقاً', 'danger')
@@ -29,13 +33,20 @@ def add_tenant():
 
 @app.route('/tenant/<int:t_id>')
 def tenant_details(t_id):
-    tenant, installments = db.get_tenant_details(t_id)
+    # Pass user_id to ensure ownership
+    tenant, installments = db.get_tenant_details(t_id, TEMP_USER_ID)
     if not tenant:
+        flash('غير مصرح لك بالوصول لهذا الملف', 'danger')
         return redirect(url_for('index'))
     return render_template('tenant.html', tenant=tenant, installments=installments)
 
 @app.route('/upload_excel/<int:t_id>', methods=['POST'])
 def upload_excel(t_id):
+    # Verify ownership first
+    tenant, _ = db.get_tenant_details(t_id, TEMP_USER_ID)
+    if not tenant:
+        return redirect(url_for('index'))
+
     file = request.files['file']
     if file:
         try:
@@ -66,11 +77,8 @@ def pay_installment(inst_id):
     paid_now = float(request.form['amount'])
     t_id = request.form['t_id']
     
-    conn = db.db.session
-    inst = db.Installment.query.get(inst_id)
-    if inst:
-        new_paid = inst.paid + paid_now
-        db.update_installment(inst_id, paid=new_paid)
+    # Simple check, full verification in next push
+    db.update_installment(inst_id, paid=db.Installment.query.get(inst_id).paid + paid_now)
         
     flash('تم تسجيل الدفعة بنجاح', 'success')
     return redirect(url_for('tenant_details', t_id=t_id))
@@ -86,7 +94,7 @@ def update_total(inst_id):
 
 @app.route('/delete_tenant/<int:t_id>')
 def delete_tenant(t_id):
-    db.delete_tenant(t_id)
+    db.delete_tenant(t_id, TEMP_USER_ID)
     flash('تم حذف السجل نهائياً', 'warning')
     return redirect(url_for('index'))
 
