@@ -1,12 +1,13 @@
 # 💳 Raseed | رصيد
 
-![Project Status](https://img.shields.io/badge/Status-Beta_V1.0-blue?style=for-the-badge)
+![Project Status](https://img.shields.io/badge/Status-Stable_V2.0-emerald?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Backend-Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
+![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Frontend-Tailwind_CSS-38bdf8?style=for-the-badge&logo=tailwindcss)
 
-> **A Smart Rental Management System for Modern Investors.**
-> Raseed helps landlords track installments, manage tenant ledgers, and monitor cash flow through a bilingual, high-performance dashboard.
+> **A Secure, Cloud-Ready Rental Management SaaS Platform.**
+> Raseed V2.0 transforms property management with a multi-user authentication system, PostgreSQL support, and a modern dark-themed interface.
 
 ---
 
@@ -15,34 +16,40 @@
 
 ---
 
-## ⚡ Key Features
+## ⚡ Key Features (v2.0)
 
-### 🏢 Property Management
-- **Tenant Profiles:** Create and manage profiles with unit details.
-- **Excel Integration:** 📂 Upload bulk installment schedules via `.xlsx` files (Date & Amount columns).
-- **Smart Archives:** Automatically stores and organizes data for each tenant separately.
+### 🔐 Security & Access
+- **Multi-User System:** 👤 Complete isolation between users. Your data is private and visible only to you.
+- **Secure Authentication:** Built-in Login & Signup system with hashed passwords using `Werkzeug` & `Flask-Login`.
+- **Smart Routing:** Protected dashboard routes; unauthorized users are redirected to the landing page.
 
-### 💰 Financial Engine
-- **Digital Ledger:** A detailed view of every installment (Paid, Remaining, Overdue).
-- **Partial Payments:** Flexibility to record full or partial payments for any specific month.
-- **Contract Adjustment:** Ability to modify contract values dynamically if discounts are applied.
+### 🏢 SaaS-Ready Architecture
+- **Hybrid Database Engine:** 🔄 Automatically switches between **SQLite** (Local Development) and **PostgreSQL** (Production/Render).
+- **Production Ready:** Configured with `Gunicorn` and `Procfile` for seamless cloud deployment.
 
-### 🌐 User Experience
-- **Bilingual UI:** 🌍 Full support for **Arabic (RTL)** and **English (LTR)** with one-click toggle.
-- **Smart Alerts:** ⚠️ Automatic dashboard warnings for payments due within **15 days**.
-- **Clean Design:** Built with **Tailwind CSS** for a responsive and professional look.
+### 💰 Financial Management
+- **Smart Ledger:** Track paid/remaining installments with color-coded indicators.
+- **Excel Integration:** 📂 Bulk upload payment schedules via `.xlsx`.
+- **Alert System:** ⚠️ Auto-notifications for payments due within 15 days.
+
+### 🌐 Modern Experience
+- **Landing Page:** A professional, responsive home page for marketing the platform.
+- **Dark Mode UI:** 🌑 A unified, sleek dark theme (Slate-900) for better visual comfort.
+- **Dynamic Navbar:** Context-aware navigation (shows "Login" for guests, "Dashboard/Logout" for users).
 
 ---
 
 ## 🛠️ Tech Stack
 
-* **Backend:** Python, Flask, SQLite.
-* **Frontend:** HTML5, Tailwind CSS (CDN), Jinja2.
-* **Data Processing:** Pandas, OpenPyXL.
+* **Core:** Python, Flask, Jinja2.
+* **Database:** SQLAlchemy (ORM), SQLite / PostgreSQL.
+* **Frontend:** HTML5, Tailwind CSS (CDN).
+* **Security:** Flask-Login, Werkzeug Security.
+* **Deployment:** Gunicorn, Render.
 
 ---
 
-## 🚀 How to Run
+## 🚀 How to Run (Locally)
 
 1.  **Clone the repository:**
     ```bash
@@ -59,8 +66,9 @@
     ```bash
     python app.py
     ```
+    *The app will automatically create a local `raseed_v2.db` database.*
 
-4.  **Access the Dashboard:**
+4.  **Access the Platform:**
     Open your browser and go to: `http://127.0.0.1:5000`
 
 ---
@@ -70,16 +78,21 @@
 ```text
 Raseed/
 │
-├── app.py                 # The Flask Server & Logic
-├── database.py            # Database Controller (SQLite)
-├── requirements.txt       # Dependencies
+├── app.py                 # Main Application Controller
+├── database.py            # Database Models & Logic (SQLAlchemy)
+├── requirements.txt       # Project Dependencies
+├── Procfile               # Production Entry Point (Gunicorn)
+├── build.sh               # Build Script for Render
 │
-├── templates/             # HTML Templates
-│   ├── base.html          # Layout & Navbar
+├── templates/             # Frontend Views
+│   ├── landing.html       # Home/Marketing Page
+│   ├── login.html         # User Authentication
+│   ├── signup.html        # User Registration
 │   ├── index.html         # Dashboard & Alerts
-│   └── tenant.html        # Ledger & Excel Upload
+│   ├── tenant.html        # Tenant Ledger
+│   └── base.html          # Main Layout
 │
-└── real_estate.db         # (Auto-generated Database)
+└── raseed_v2.db           # (Local Dev Database - Auto Generated)
 ```
 ---
 
@@ -98,11 +111,11 @@ To import a schedule for a tenant, upload an Excel file with **two columns** (Da
 --- 
 
 ## 🔮 Future Roadmap
-- [ ] 🔐 Authentication System: Multi-user support for different landlords.
+- [ ] 📧 Email Notifications: Send PDF receipts to tenants automatically.
 
-- [ ] 📄 PDF Export: Generate official payment receipts.
+- [ ] 📊 Advanced Analytics: Visual charts for yearly revenue.
 
-- [ ] 📊 Analytics: Charts for monthly income vs. expected income.
+- [ ] 📱 PWA Support: Install the app on mobile devices.
 
 ---
 
