@@ -7,9 +7,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>
-        html {
-            background-color: #0f172a;
-        }
+        html { background-color: #0f172a; }
         body { 
             font-family: 'Tajawal', sans-serif;
             background-color: #0f172a;
@@ -27,17 +25,31 @@
 </head>
 <body>
     
-    <nav class="w-full z-50 p-6">
+    <nav class="w-full z-50 p-6 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-md sticky top-0">
         <div class="container mx-auto flex justify-between items-center">
             <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-white hover:text-blue-400 transition-colors">
                 <span class="text-3xl drop-shadow-lg">💳</span> 
                 <span class="drop-shadow-lg">رصيد</span>
             </a>
             
-            <div class="hidden md:flex items-center gap-4">
-                <div class="text-[10px] font-bold tracking-widest text-slate-400 uppercase bg-slate-800/80 px-3 py-1 rounded-full border border-slate-700">
-                    Secure Dashboard
-                </div>
+            <div class="flex items-center gap-4">
+                {% if current_user.is_authenticated %}
+                    <a href="/dashboard" class="hidden md:block text-sm font-bold text-slate-300 hover:text-white transition-colors">لوحة التحكم</a>
+                    <span class="hidden md:block text-slate-600">|</span>
+                    <div class="flex items-center gap-3">
+                        <span class="text-xs font-bold text-blue-400 bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-500/20">
+                            {{ current_user.name }}
+                        </span>
+                        <a href="/logout" class="text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-900/10 hover:bg-rose-900/30 px-3 py-1.5 rounded-lg transition-all">
+                            خروج
+                        </a>
+                    </div>
+                {% else %}
+                    <a href="/login" class="text-sm font-bold text-slate-300 hover:text-white transition-colors">دخول</a>
+                    <a href="/signup" class="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all shadow-lg shadow-blue-900/20">
+                        حساب جديد
+                    </a>
+                {% endif %}
             </div>
         </div>
     </nav>
@@ -47,7 +59,7 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                <div class="mb-4 p-4 rounded-xl border {% if category == 'success' %}bg-emerald-900/20 border-emerald-500/20 text-emerald-400{% elif category == 'danger' %}bg-rose-900/20 border-rose-500/20 text-rose-400{% else %}bg-blue-900/20 border-blue-500/20 text-blue-400{% endif %}">
+                <div class="mb-4 p-4 rounded-xl border max-w-2xl mx-auto text-center font-bold {% if category == 'success' %}bg-emerald-900/20 border-emerald-500/20 text-emerald-400{% elif category == 'danger' %}bg-rose-900/20 border-rose-500/20 text-rose-400{% else %}bg-blue-900/20 border-blue-500/20 text-blue-400{% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -57,8 +69,8 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="py-6 text-center text-slate-500 text-xs mt-auto border-t border-slate-800/50">
-        &copy; 2026 نظام رصيد العقاري
+    <footer class="py-8 text-center text-slate-500 text-xs mt-auto border-t border-slate-800/50">
+        <p>&copy; 2026 نظام رصيد العقاري | جميع الحقوق محفوظة</p>
     </footer>
 
 </body>

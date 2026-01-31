@@ -23,9 +23,7 @@ def load_user(user_id):
 
 @app.route('/')
 def home():
-    if current_user.is_authenticated:
-        return redirect(url_for('dashboard'))
-    return redirect(url_for('login'))
+    return render_template('landing.html')
 
 @app.route('/dashboard')
 @login_required

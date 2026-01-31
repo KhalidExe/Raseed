@@ -1,0 +1,57 @@
+{% extends 'base.html' %}
+
+{% block content %}
+<div class="relative overflow-hidden">
+    <div class="absolute top-0 left-1/2 -translate-x-1/2 w-[1000px] h-[500px] bg-blue-600/20 rounded-full blur-3xl -z-10"></div>
+    
+    <div class="container mx-auto px-4 py-20 text-center">
+        <div class="inline-block mb-6 px-4 py-1.5 rounded-full border border-blue-500/30 bg-blue-900/20 text-blue-400 text-xs font-bold tracking-wider uppercase animate-pulse">
+            SaaS Ready v2.0
+        </div>
+        
+        <h1 class="text-5xl md:text-7xl font-black text-white mb-8 tracking-tight leading-tight">
+            إدارتك العقارية.. <br>
+            <span class="text-transparent bg-clip-text bg-gradient-to-r from-blue-400 to-indigo-500">أذكى وأسهل.</span>
+        </h1>
+        
+        <p class="text-slate-400 text-lg md:text-xl max-w-2xl mx-auto mb-10 leading-relaxed">
+            نظام "رصيد" يمنحك السيطرة الكاملة على محفظتك العقارية. تابع الإيجارات، نبهات السداد، والتقارير المالية في مكان واحد آمن ومشفر.
+        </p>
+
+        <div class="flex flex-col md:flex-row gap-4 justify-center items-center">
+            {% if current_user.is_authenticated %}
+                <a href="/dashboard" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-900/30 transition-all hover:-translate-y-1 w-full md:w-auto">
+                    الذهاب للوحة التحكم 🚀
+                </a>
+            {% else %}
+                <a href="/signup" class="px-8 py-4 bg-blue-600 hover:bg-blue-500 text-white rounded-xl font-bold text-lg shadow-lg shadow-blue-900/30 transition-all hover:-translate-y-1 w-full md:w-auto">
+                    ابدأ مجاناً الآن
+                </a>
+                <a href="/login" class="px-8 py-4 bg-slate-800 hover:bg-slate-700 text-white rounded-xl font-bold text-lg border border-slate-700 transition-all hover:-translate-y-1 w-full md:w-auto">
+                    تسجيل الدخول
+                </a>
+            {% endif %}
+        </div>
+    </div>
+
+    <div class="container mx-auto px-4 py-20">
+        <div class="grid grid-cols-1 md:grid-cols-3 gap-8">
+            <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-blue-500/30 transition-colors">
+                <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-slate-700">🔒</div>
+                <h3 class="text-xl font-bold text-white mb-3">حماية وأمان</h3>
+                <p class="text-slate-400 leading-relaxed">بياناتك مشفرة ومحفوظة في سيرفرات سحابية آمنة، مع نظام دخول محمي ونسخ احتياطي تلقائي.</p>
+            </div>
+            <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-blue-500/30 transition-colors">
+                <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-slate-700">📊</div>
+                <h3 class="text-xl font-bold text-white mb-3">تقارير ذكية</h3>
+                <p class="text-slate-400 leading-relaxed">لوحة تحكم تفاعلية تعطيك نظرة شاملة على نسبة السداد، الدفعات المتأخرة، والأرباح المتوقعة.</p>
+            </div>
+            <div class="bg-slate-800/50 p-8 rounded-3xl border border-slate-700/50 hover:border-blue-500/30 transition-colors">
+                <div class="w-14 h-14 bg-slate-900 rounded-2xl flex items-center justify-center text-3xl mb-6 border border-slate-700">⚡</div>
+                <h3 class="text-xl font-bold text-white mb-3">سرعة وسهولة</h3>
+                <p class="text-slate-400 leading-relaxed">واجهة عربية بالكامل، دعم لرفع ملفات Excel، وتصميم متجاوب يعمل على الجوال والكمبيوتر.</p>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
