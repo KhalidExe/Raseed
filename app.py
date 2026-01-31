@@ -6,9 +6,14 @@ import pandas as pd
 import os
 
 app = Flask(__name__)
-app.secret_key = "raseed_production_secret_key"
+app.secret_key = os.environ.get('SECRET_KEY', 'raseed_production_secret_key')
 
-app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///raseed_v2.db'
+# Database Configuration (Smart Switch)
+database_url = os.environ.get('DATABASE_URL')
+if database_url and database_url.startswith("postgres://"):
+    database_url = database_url.replace("postgres://", "postgresql://", 1)
+
+app.config['SQLALCHEMY_DATABASE_URI'] = database_url or 'sqlite:///raseed_v2.db'
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 
 db.init_db(app)
@@ -140,7 +145,6 @@ def pay_installment(inst_id):
     
     inst = db.Installment.query.get(inst_id)
     if inst:
-         # Double check ownership logic here if strict security needed
         new_paid = inst.paid + paid_now
         db.update_installment(inst_id, paid=new_paid)
         
