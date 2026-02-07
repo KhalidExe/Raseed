@@ -13,7 +13,6 @@ MESSAGES = {
     'lang_switch': {'ar': 'English', 'en': 'العربية'},
     
     # Landing Page
-    'hero_badge': {'ar': 'نسخة السحابة 2.0', 'en': 'SaaS Ready v2.0'},
     'hero_title': {'ar': 'إدارتك العقارية.. أذكى وأسهل', 'en': 'Property Management.. Smarter & Easier'},
     'hero_desc': {'ar': 'نظام "رصيد" يمنحك السيطرة الكاملة على محفظتك العقارية. تابع الإيجارات، نبهات السداد، والتقارير المالية في مكان واحد آمن ومشفر.', 
                   'en': 'Raseed gives you full control over your real estate portfolio. Track rents, payment alerts, and financial reports in one secure, encrypted place.'},
@@ -28,7 +27,7 @@ MESSAGES = {
     'feat_speed_title': {'ar': 'سرعة وسهولة', 'en': 'Speed & Ease'},
     'feat_speed_desc': {'ar': 'واجهة ثنائية اللغة، دعم إكسل، وتصميم متجاوب.', 'en': 'Bilingual interface, Excel support, and responsive design.'},
 
-    # Auth Pages (Placeholder for next push)
+    # Auth Pages
     'email': {'ar': 'البريد الإلكتروني', 'en': 'Email Address'},
     'password': {'ar': 'كلمة المرور', 'en': 'Password'},
     'full_name': {'ar': 'الاسم الكامل', 'en': 'Full Name'},
@@ -36,7 +35,7 @@ MESSAGES = {
     'have_account': {'ar': 'لديك حساب بالفعل؟', 'en': 'Already have an account?'},
     'create_account': {'ar': 'إنشاء حساب', 'en': 'Create Account'},
     
-    # Dashboard (Placeholder for future push)
+    # Dashboard keys... (Rest remains the same)
     'total_paid': {'ar': 'تم تحصيله', 'en': 'Total Paid'},
     'total_remaining': {'ar': 'متبقي', 'en': 'Remaining'},
     'add_tenant': {'ar': 'إضافة مستأجر جديد', 'en': 'Add New Tenant'},
@@ -51,6 +50,12 @@ MESSAGES = {
     'upload_excel': {'ar': 'رفع ملف إكسل', 'en': 'Upload Excel'},
     'due_date': {'ar': 'تاريخ الاستحقاق', 'en': 'Due Date'},
     'amount': {'ar': 'المبلغ', 'en': 'Amount'},
+    'status': {'ar': 'الحالة', 'en': 'Status'},
     'pay': {'ar': 'سداد', 'en': 'Pay'},
     'update': {'ar': 'تحديث', 'en': 'Update'},
+    'financial_record': {'ar': 'السجل المالي', 'en': 'Financial Ledger'},
+    'paid_done': {'ar': 'مدفوع', 'en': 'Paid'},
+    'unpaid': {'ar': 'غير مدفوع', 'en': 'Unpaid'},
+    'partial': {'ar': 'جزئي', 'en': 'Partial'},
+    'no_tenants': {'ar': 'لا يوجد مستأجرين حالياً', 'en': 'No tenants found'},
 }
