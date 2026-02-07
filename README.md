@@ -1,13 +1,13 @@
 # 💳 Raseed | رصيد
 
-![Project Status](https://img.shields.io/badge/Status-Stable_V2.0-emerald?style=for-the-badge)
+![Project Status](https://img.shields.io/badge/Status-Stable_V2.1-emerald?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
 ![Flask](https://img.shields.io/badge/Backend-Flask-000000?style=for-the-badge&logo=flask&logoColor=white)
 ![PostgreSQL](https://img.shields.io/badge/DB-PostgreSQL-336791?style=for-the-badge&logo=postgresql&logoColor=white)
 ![Tailwind](https://img.shields.io/badge/Frontend-Tailwind_CSS-38bdf8?style=for-the-badge&logo=tailwindcss)
 
-> **A Secure, Cloud-Ready Rental Management SaaS Platform.**
-> Raseed V2.0 transforms property management with a multi-user authentication system, PostgreSQL support, and a modern dark-themed interface.
+> **A Bilingual, Cloud-Ready Rental Management SaaS Platform.**
+> Raseed V2.1 transforms property management with a fully localized interface (Arabic/English), visual financial analytics, and a secure multi-user architecture.
 
 ---
 
@@ -16,7 +16,12 @@
 
 ---
 
-## ⚡ Key Features (v2.0)
+## ⚡ Key Features (v2.1)
+
+### 🌍 Bilingual & Visual Experience (New)
+- **Full Localization:** 🇸🇦/🇺🇸 Switch instantly between **Arabic (RTL)** and **English (LTR)**.
+- **Interactive Charts:** 📊 Visual doughnut charts powered by **Chart.js** to track Paid vs. Remaining balances instantly.
+- **Dynamic UI:** Interface automatically adapts direction (RTL/LTR) based on selected language.
 
 ### 🔐 Security & Access
 - **Multi-User System:** 👤 Complete isolation between users. Your data is private and visible only to you.
@@ -32,18 +37,13 @@
 - **Excel Integration:** 📂 Bulk upload payment schedules via `.xlsx`.
 - **Alert System:** ⚠️ Auto-notifications for payments due within 15 days.
 
-### 🌐 Modern Experience
-- **Landing Page:** A professional, responsive home page for marketing the platform.
-- **Dark Mode UI:** 🌑 A unified, sleek dark theme (Slate-900) for better visual comfort.
-- **Dynamic Navbar:** Context-aware navigation (shows "Login" for guests, "Dashboard/Logout" for users).
-
 ---
 
 ## 🛠️ Tech Stack
 
 * **Core:** Python, Flask, Jinja2.
 * **Database:** SQLAlchemy (ORM), SQLite / PostgreSQL.
-* **Frontend:** HTML5, Tailwind CSS (CDN).
+* **Frontend:** HTML5, Tailwind CSS (CDN), Chart.js.
 * **Security:** Flask-Login, Werkzeug Security.
 * **Deployment:** Gunicorn, Render.
 
@@ -79,20 +79,19 @@
 Raseed/
 │
 ├── app.py                 # Main Application Controller
-├── database.py            # Database Models & Logic (SQLAlchemy)
+├── database.py            # Database Models & Logic
+├── translations.py        # 🌍 Localization Dictionary (Ar/En)
 ├── requirements.txt       # Project Dependencies
-├── Procfile               # Production Entry Point (Gunicorn)
-├── build.sh               # Build Script for Render
+├── Procfile               # Production Entry Point
 │
 ├── templates/             # Frontend Views
-│   ├── landing.html       # Home/Marketing Page
-│   ├── login.html         # User Authentication
-│   ├── signup.html        # User Registration
-│   ├── index.html         # Dashboard & Alerts
+│   ├── landing.html       # Marketing Page
+│   ├── login.html         # Auth Pages
+│   ├── index.html         # Dashboard & Charts
 │   ├── tenant.html        # Tenant Ledger
-│   └── base.html          # Main Layout
+│   └── base.html          # Layout & Navbar
 │
-└── raseed_v2.db           # (Local Dev Database - Auto Generated)
+└── raseed_v2.db           # (Local Dev Database)
 ```
 ---
 
@@ -111,9 +110,11 @@ To import a schedule for a tenant, upload an Excel file with **two columns** (Da
 --- 
 
 ## 🔮 Future Roadmap
-- [ ] 📧 Email Notifications: Send PDF receipts to tenants automatically.
+- [x] 🌍 Bilingual Support (Arabic/English).
 
-- [ ] 📊 Advanced Analytics: Visual charts for yearly revenue.
+- [x] 📊 Visual Analytics (Charts).
+
+- [ ] 📧 Email Notifications: Send PDF receipts to tenants automatically.
 
 - [ ] 📱 PWA Support: Install the app on mobile devices.
 
