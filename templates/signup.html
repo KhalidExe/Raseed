@@ -1,9 +1,9 @@
 <!DOCTYPE html>
-<html lang="ar" dir="rtl">
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>حساب جديد | رصيد</title>
+    <title>{{ texts['signup'][lang] }} | {{ texts['app_name'][lang] }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
     <style>body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; }</style>
@@ -12,8 +12,8 @@
     <div class="w-full max-w-md bg-slate-800 rounded-3xl shadow-2xl border border-slate-700 p-8">
         <div class="text-center mb-8">
             <h1 class="text-4xl mb-2">🚀</h1>
-            <h2 class="text-2xl font-bold text-white">حساب جديد</h2>
-            <p class="text-slate-400 text-sm mt-2">ابدأ إدارة عقاراتك باحترافية</p>
+            <h2 class="text-2xl font-bold text-white">{{ texts['signup'][lang] }}</h2>
+            <p class="text-slate-400 text-sm mt-2">{{ texts['signup_subtitle'][lang] }}</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -28,25 +28,31 @@
 
         <form action="/signup" method="POST" class="space-y-4">
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">الاسم الكامل</label>
+                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['full_name'][lang] }}</label>
                 <input type="text" name="name" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
             </div>
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">البريد الإلكتروني</label>
+                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['email'][lang] }}</label>
                 <input type="email" name="email" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
             </div>
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">كلمة المرور</label>
+                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['password'][lang] }}</label>
                 <input type="password" name="password" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
             </div>
             <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20 mt-2">
-                تسجيل الحساب
+                {{ texts['create_account'][lang] }}
             </button>
         </form>
 
         <div class="mt-6 text-center text-sm">
-            <span class="text-slate-500">لديك حساب بالفعل؟</span>
-            <a href="/login" class="text-blue-400 font-bold hover:text-blue-300">سجل دخولك</a>
+            <span class="text-slate-500">{{ texts['have_account'][lang] }}</span>
+            <a href="/login" class="text-blue-400 font-bold hover:text-blue-300">{{ texts['login'][lang] }}</a>
+        </div>
+
+        <div class="mt-8 text-center">
+             <a href="{{ url_for('set_language', lang_code='en' if lang == 'ar' else 'ar') }}" class="text-xs text-slate-600 hover:text-slate-400 underline">
+                {{ texts['lang_switch'][lang] }}
+            </a>
         </div>
     </div>
 </body>
