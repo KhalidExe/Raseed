@@ -1,14 +1,15 @@
-from flask import Flask, render_template, request, redirect, url_for, flash
+from flask import Flask, render_template, request, redirect, url_for, flash, session
 from flask_login import LoginManager, login_user, login_required, logout_user, current_user
 from werkzeug.security import generate_password_hash, check_password_hash
 import database as db
 import pandas as pd
 import os
+from translations import MESSAGES  # Import the translation dictionary
 
 app = Flask(__name__)
 app.secret_key = os.environ.get('SECRET_KEY', 'raseed_production_secret_key')
 
-# Database Configuration (Smart Switch)
+# Database Configuration
 database_url = os.environ.get('DATABASE_URL')
 if database_url and database_url.startswith("postgres://"):
     database_url = database_url.replace("postgres://", "postgresql://", 1)
@@ -24,7 +25,30 @@ login_manager.login_view = 'login'
 
 @login_manager.user_loader
 def load_user(user_id):
+    """Load user by ID for Flask-Login."""
     return db.User.query.get(int(user_id))
+
+# --- Localization Logic ---
+
+@app.before_request
+def before_request():
+    """Ensure a default language is set in the session."""
+    if 'lang' not in session:
+        session['lang'] = 'ar'  # Default to Arabic
+
+@app.context_processor
+def inject_content():
+    """Inject translation dictionary and current language into all templates."""
+    return dict(lang=session.get('lang', 'ar'), texts=MESSAGES)
+
+@app.route('/set_lang/<lang_code>')
+def set_language(lang_code):
+    """Route to switch language between 'ar' and 'en'."""
+    if lang_code in ['ar', 'en']:
+        session['lang'] = lang_code
+    return redirect(request.referrer or url_for('home'))
+
+# --- Main Routes ---
 
 @app.route('/')
 def home():
@@ -50,7 +74,8 @@ def login():
             login_user(user)
             return redirect(url_for('dashboard'))
         else:
-            flash('البريد الإلكتروني أو كلمة المرور غير صحيحة', 'danger')
+            # We will localize flash messages in a later push
+            flash('Invalid email or password', 'danger')
             
     return render_template('login.html')
 
@@ -66,7 +91,7 @@ def signup():
         
         user = db.User.query.filter_by(email=email).first()
         if user:
-            flash('البريد الإلكتروني مسجل مسبقاً', 'danger')
+            flash('Email already registered', 'danger')
             return redirect(url_for('signup'))
             
         new_user = db.User(name=name, email=email, password_hash=generate_password_hash(password))
@@ -91,9 +116,9 @@ def add_tenant():
     unit = request.form.get('unit')
     
     if db.add_tenant(current_user.id, name, unit):
-        flash('تم إضافة المستأجر بنجاح', 'success')
+        flash('Tenant added successfully', 'success')
     else:
-        flash('خطأ: اسم المستأجر موجود مسبقاً', 'danger')
+        flash('Error: Tenant name already exists', 'danger')
     return redirect(url_for('dashboard'))
 
 @app.route('/tenant/<int:t_id>')
@@ -101,7 +126,7 @@ def add_tenant():
 def tenant_details(t_id):
     tenant, installments = db.get_tenant_details(t_id, current_user.id)
     if not tenant:
-        flash('غير مصرح لك بالوصول لهذا الملف', 'danger')
+        flash('Access denied', 'danger')
         return redirect(url_for('dashboard'))
     return render_template('tenant.html', tenant=tenant, installments=installments)
 
@@ -128,12 +153,12 @@ def upload_excel(t_id):
                         data_list.append((row[date_col], row[amount_col]))
                 
                 db.add_installments_from_excel(t_id, data_list)
-                flash('تم رفع جدول الدفعات بنجاح', 'success')
+                flash('Schedule uploaded successfully', 'success')
             else:
-                flash('الملف لا يحتوي على الأعمدة المطلوبة', 'danger')
+                flash('Invalid file format', 'danger')
 
         except Exception as e:
-            flash(f'حدث خطأ أثناء المعالجة: {e}', 'danger')
+            flash(f'Error processing file: {e}', 'danger')
             
     return redirect(url_for('tenant_details', t_id=t_id))
 
@@ -148,7 +173,7 @@ def pay_installment(inst_id):
         new_paid = inst.paid + paid_now
         db.update_installment(inst_id, paid=new_paid)
         
-    flash('تم تسجيل الدفعة بنجاح', 'success')
+    flash('Payment recorded', 'success')
     return redirect(url_for('tenant_details', t_id=t_id))
 
 @app.route('/update_total/<int:inst_id>', methods=['POST'])
@@ -158,14 +183,14 @@ def update_total(inst_id):
     t_id = request.form['t_id']
     
     db.update_installment(inst_id, amount=new_total)
-    flash('تم تحديث قيمة العقد', 'info')
+    flash('Amount updated', 'info')
     return redirect(url_for('tenant_details', t_id=t_id))
 
 @app.route('/delete_tenant/<int:t_id>')
 @login_required
 def delete_tenant(t_id):
     db.delete_tenant(t_id, current_user.id)
-    flash('تم حذف السجل نهائياً', 'warning')
+    flash('Record deleted', 'warning')
     return redirect(url_for('dashboard'))
 
 if __name__ == '__main__':
