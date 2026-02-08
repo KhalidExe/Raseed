@@ -1,25 +1,29 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ texts['login'][lang] }} | {{ texts['app_name'][lang] }}</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <style>body { font-family: 'Tajawal', sans-serif; background-color: #0f172a; }</style>
+    <script>
+        tailwind.config = { darkMode: 'class', theme: { extend: { colors: { brand: { teal: '#10B981', dark: '#0B1120' } }, fontFamily: { sans: ['Tajawal', 'sans-serif'] } } } }
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) { document.documentElement.classList.add('dark'); } else { document.documentElement.classList.remove('dark'); }
+    </script>
 </head>
-<body class="flex items-center justify-center min-h-screen p-4">
-    <div class="w-full max-w-md bg-slate-800 rounded-3xl shadow-2xl border border-slate-700 p-8">
+<body class="flex items-center justify-center min-h-screen p-4 bg-gray-50 dark:bg-[#0B1120] text-slate-800 dark:text-slate-200 transition-colors duration-300">
+    
+    <div class="w-full max-w-md bg-white dark:bg-slate-800 rounded-3xl shadow-xl border border-slate-200 dark:border-slate-700 p-8 transition-colors duration-300">
         <div class="text-center mb-8">
-            <h1 class="text-4xl mb-2">💳</h1>
-            <h2 class="text-2xl font-bold text-white">{{ texts['login'][lang] }}</h2>
-            <p class="text-slate-400 text-sm mt-2">{{ texts['login_subtitle'][lang] }}</p>
+            <h1 class="text-4xl mb-2 text-brand-teal">💳</h1>
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white">{{ texts['login'][lang] }}</h2>
+            <p class="text-slate-500 dark:text-slate-400 text-sm mt-2">{{ texts['login_subtitle'][lang] }}</p>
         </div>
 
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                <div class="mb-4 p-3 rounded-xl bg-rose-900/20 border border-rose-500/20 text-rose-400 text-sm text-center font-bold">
+                <div class="mb-4 p-3 rounded-xl bg-rose-50 border border-rose-200 text-rose-600 dark:bg-rose-900/20 dark:border-rose-500/20 dark:text-rose-400 text-sm text-center font-bold">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -28,26 +32,26 @@
 
         <form action="/login" method="POST" class="space-y-4">
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['email'][lang] }}</label>
-                <input type="email" name="email" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['email'][lang] }}</label>
+                <input type="email" name="email" required class="w-full p-3 bg-slate-50 border border-slate-200 dark:bg-slate-900 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none transition-colors">
             </div>
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['password'][lang] }}</label>
-                <input type="password" name="password" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 focus:ring-1 focus:ring-blue-500 outline-none transition-colors">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['password'][lang] }}</label>
+                <input type="password" name="password" required class="w-full p-3 bg-slate-50 border border-slate-200 dark:bg-slate-900 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal focus:ring-1 focus:ring-brand-teal outline-none transition-colors">
             </div>
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20 mt-2">
+            <button type="submit" class="w-full py-3 bg-brand-teal hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 mt-2">
                 {{ texts['login_btn'][lang] }}
             </button>
         </form>
 
         <div class="mt-6 text-center text-sm">
-            <span class="text-slate-500">{{ texts['no_account'][lang] }}</span>
-            <a href="/signup" class="text-blue-400 font-bold hover:text-blue-300">{{ texts['create_account'][lang] }}</a>
+            <span class="text-slate-500 dark:text-slate-400">{{ texts['no_account'][lang] }}</span>
+            <a href="/signup" class="text-brand-teal font-bold hover:text-emerald-500">{{ texts['create_account'][lang] }}</a>
         </div>
         
         <div class="mt-8 text-center">
-             <a href="{{ url_for('set_language', lang_code='en' if lang == 'ar' else 'ar') }}" class="text-xs text-slate-600 hover:text-slate-400 underline">
-                {{ texts['lang_switch'][lang] }}
+             <a href="/" class="text-xs text-slate-400 hover:text-slate-600 dark:hover:text-slate-300">
+                ← {{ texts['app_name'][lang] }}
             </a>
         </div>
     </div>
