@@ -3,65 +3,72 @@
 {% block content %}
 <div class="container mx-auto px-4 py-8">
     
-    <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl mb-8 flex flex-col md:flex-row justify-between items-center gap-4">
-        <div>
-            <h2 class="text-2xl font-bold text-white mb-1">{{ tenant.name }}</h2>
-            <p class="text-slate-400 text-sm flex items-center gap-2">
-                🏠 {{ tenant.unit_name }}
-            </p>
+    <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm mb-8 flex flex-col md:flex-row justify-between items-center gap-6 transition-colors duration-300">
+        <div class="flex items-center gap-4">
+            <div class="w-16 h-16 rounded-2xl bg-brand-teal/10 flex items-center justify-center text-3xl">
+                🏠
+            </div>
+            <div>
+                <h2 class="text-3xl font-black text-slate-900 dark:text-white mb-1">{{ tenant.name }}</h2>
+                <p class="text-slate-500 dark:text-slate-400 font-medium flex items-center gap-2">
+                    {{ texts['unit_name'][lang] }}: <span class="text-brand-teal font-bold">{{ tenant.unit_name }}</span>
+                </p>
+            </div>
         </div>
         
-        <div class="flex gap-3">
-            <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="bg-emerald-600 hover:bg-emerald-500 text-white px-6 py-3 rounded-xl font-bold transition-all shadow-lg shadow-emerald-900/20 flex items-center gap-2">
-                📂 {{ texts['upload_excel'][lang] }}
+        <div class="flex gap-3 w-full md:w-auto">
+            <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="flex-1 md:flex-none bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-700 dark:text-white px-6 py-3 rounded-xl font-bold transition-all flex items-center justify-center gap-2 group">
+                <span class="text-xl group-hover:scale-110 transition-transform">📂</span> {{ texts['upload_excel'][lang] }}
             </button>
         </div>
     </div>
 
-    <div class="bg-slate-800 rounded-3xl border border-slate-700 shadow-xl overflow-hidden">
-        <div class="p-6 border-b border-slate-700">
-            <h3 class="text-xl font-bold text-white">{{ texts['financial_record'][lang] }}</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors duration-300">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700/50">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white flex items-center gap-2">
+                💰 {{ texts['financial_record'][lang] }}
+            </h3>
         </div>
         
         <div class="overflow-x-auto">
-            <table class="w-full text-start text-slate-300">
-                <thead class="bg-slate-900/50 text-slate-400 font-bold uppercase text-xs">
+            <table class="w-full text-start text-slate-600 dark:text-slate-300">
+                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="p-4 text-start">{{ texts['due_date'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['amount'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['total_paid'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['total_remaining'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['status'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['actions'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['due_date'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['amount'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['total_paid'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['total_remaining'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['status'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['actions'][lang] }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                     {% for inst in installments %}
-                    <tr class="hover:bg-slate-700/50 transition-colors">
-                        <td class="p-4 font-mono text-sm">{{ inst.date }}</td>
-                        <td class="p-4 font-bold text-white">{{ "{:,.0f}".format(inst.amount) }}</td>
-                        <td class="p-4 text-emerald-400">{{ "{:,.0f}".format(inst.paid) }}</td>
-                        <td class="p-4 text-rose-400">{{ "{:,.0f}".format(inst.amount - inst.paid) }}</td>
-                        <td class="p-4">
-                            {% if inst.paid >= inst.amount %}
-                                <span class="bg-emerald-900/30 text-emerald-400 px-3 py-1 rounded-full text-xs font-bold border border-emerald-500/30">
-                                    {{ texts['paid_done'][lang] }}
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="p-5 font-mono font-bold text-slate-700 dark:text-slate-400">{{ inst['date'] }}</td>
+                        <td class="p-5 font-black text-slate-900 dark:text-white">{{ "{:,.0f}".format(inst['amount']) }}</td>
+                        <td class="p-5 font-bold text-emerald-600 dark:text-emerald-400">{{ "{:,.0f}".format(inst['paid']) }}</td>
+                        <td class="p-5 font-bold text-rose-500 dark:text-rose-400">{{ "{:,.0f}".format(inst['amount'] - inst['paid']) }}</td>
+                        <td class="p-5">
+                            {% if inst['paid'] >= inst['amount'] %}
+                                <span class="bg-emerald-100 dark:bg-emerald-900/30 text-emerald-700 dark:text-emerald-400 px-3 py-1 rounded-lg text-xs font-bold border border-emerald-200 dark:border-emerald-500/30 flex w-fit items-center gap-1">
+                                    ✅ {{ texts['paid_done'][lang] }}
                                 </span>
-                            {% elif inst.paid > 0 %}
-                                <span class="bg-yellow-900/30 text-yellow-400 px-3 py-1 rounded-full text-xs font-bold border border-yellow-500/30">
-                                    {{ texts['partial'][lang] }}
+                            {% elif inst['paid'] > 0 %}
+                                <span class="bg-orange-100 dark:bg-orange-900/30 text-orange-700 dark:text-orange-400 px-3 py-1 rounded-lg text-xs font-bold border border-orange-200 dark:border-orange-500/30 flex w-fit items-center gap-1">
+                                    ⏳ {{ texts['partial'][lang] }}
                                 </span>
                             {% else %}
-                                <span class="bg-slate-700 text-slate-400 px-3 py-1 rounded-full text-xs font-bold">
-                                    {{ texts['unpaid'][lang] }}
+                                <span class="bg-slate-100 dark:bg-slate-700 text-slate-500 dark:text-slate-400 px-3 py-1 rounded-lg text-xs font-bold border border-slate-200 dark:border-slate-600 flex w-fit items-center gap-1">
+                                    🔴 {{ texts['unpaid'][lang] }}
                                 </span>
                             {% endif %}
                         </td>
-                        <td class="p-4 flex gap-2">
-                            <button onclick="openPayModal('{{ inst.id }}', '{{ inst.amount - inst.paid }}')" class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
-                                💰 {{ texts['pay'][lang] }}
+                        <td class="p-5 flex gap-2">
+                            <button onclick="openPayModal('{{ inst['id'] }}', '{{ inst['amount'] - inst['paid'] }}')" class="bg-brand-teal/10 hover:bg-brand-teal hover:text-white text-brand-teal px-4 py-2 rounded-xl text-sm font-bold transition-all">
+                                {{ texts['pay'][lang] }}
                             </button>
-                            <button onclick="openEditModal('{{ inst.id }}', '{{ inst.amount }}')" class="bg-slate-700 hover:bg-slate-600 text-slate-300 hover:text-white px-3 py-1.5 rounded-lg text-xs font-bold transition-all">
+                            <button onclick="openEditModal('{{ inst['id'] }}', '{{ inst['amount'] }}')" class="bg-slate-100 hover:bg-slate-200 dark:bg-slate-700 dark:hover:bg-slate-600 text-slate-500 dark:text-slate-300 px-3 py-2 rounded-xl text-sm font-bold transition-all">
                                 ✏️
                             </button>
                         </td>
@@ -71,8 +78,9 @@
             </table>
             {% if not installments %}
             <div class="p-12 text-center">
-                <p class="text-slate-500 mb-4">{{ texts['no_tenants'][lang] }}</p>
-                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="text-blue-400 hover:text-blue-300 text-sm font-bold underline">
+                <div class="w-16 h-16 bg-slate-50 dark:bg-slate-700 rounded-full flex items-center justify-center mx-auto mb-4 text-3xl">📄</div>
+                <p class="text-slate-500 dark:text-slate-400 mb-6 font-medium">{{ texts['no_tenants'][lang] }}</p>
+                <button onclick="document.getElementById('uploadModal').classList.remove('hidden')" class="text-brand-teal hover:text-emerald-600 text-sm font-bold underline decoration-2 underline-offset-4">
                     {{ texts['upload_excel'][lang] }}
                 </button>
             </div>
@@ -81,51 +89,52 @@
     </div>
 </div>
 
-<div id="uploadModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl p-6 relative">
-        <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-white">✕</button>
-        <h3 class="text-xl font-bold text-white mb-6">{{ texts['upload_excel'][lang] }}</h3>
+<div id="uploadModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl p-8 relative transition-colors duration-300">
+        <button onclick="document.getElementById('uploadModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">{{ texts['upload_excel'][lang] }}</h3>
         <form action="{{ url_for('upload_excel', t_id=tenant.id) }}" method="POST" enctype="multipart/form-data" class="space-y-4">
-            <div class="border-2 border-dashed border-slate-600 rounded-xl p-8 text-center hover:border-blue-500 transition-colors cursor-pointer relative">
-                <input type="file" name="file" accept=".xlsx" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full">
-                <p class="text-slate-400 text-sm">Drag & Drop or Click to Upload</p>
-                <p class="text-slate-600 text-xs mt-2">(.xlsx files only)</p>
+            <div class="border-2 border-dashed border-slate-300 dark:border-slate-600 rounded-2xl p-10 text-center hover:border-brand-teal dark:hover:border-brand-teal transition-colors cursor-pointer relative group bg-slate-50 dark:bg-slate-900/50">
+                <input type="file" name="file" accept=".xlsx" required class="absolute inset-0 opacity-0 cursor-pointer w-full h-full z-10">
+                <div class="text-4xl mb-3 opacity-50 group-hover:scale-110 transition-transform">📂</div>
+                <p class="text-slate-500 dark:text-slate-400 text-sm font-bold">Drag & Drop or Click to Upload</p>
+                <p class="text-slate-400 dark:text-slate-500 text-xs mt-2">(.xlsx files only)</p>
             </div>
-            <button type="submit" class="w-full py-3 bg-emerald-600 hover:bg-emerald-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-900/20">
+            <button type="submit" class="w-full py-4 bg-brand-teal hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">
                 {{ texts['upload_excel'][lang] }}
             </button>
         </form>
     </div>
 </div>
 
-<div id="payModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-sm rounded-3xl border border-slate-700 shadow-2xl p-6 relative">
-        <button onclick="document.getElementById('payModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-white">✕</button>
-        <h3 class="text-xl font-bold text-white mb-6">{{ texts['pay'][lang] }}</h3>
+<div id="payModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl shadow-2xl p-8 relative transition-colors duration-300">
+        <button onclick="document.getElementById('payModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">{{ texts['pay'][lang] }}</h3>
         <form id="payForm" method="POST" class="space-y-4">
             <input type="hidden" name="t_id" value="{{ tenant.id }}">
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['amount'][lang] }}</label>
-                <input type="number" step="0.01" name="amount" id="payAmount" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['amount'][lang] }}</label>
+                <input type="number" step="0.01" name="amount" id="payAmount" required class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal outline-none transition-colors text-lg font-bold">
             </div>
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20">
+            <button type="submit" class="w-full py-4 bg-brand-teal hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20">
                 {{ texts['pay'][lang] }}
             </button>
         </form>
     </div>
 </div>
 
-<div id="editModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-sm rounded-3xl border border-slate-700 shadow-2xl p-6 relative">
-        <button onclick="document.getElementById('editModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-white">✕</button>
-        <h3 class="text-xl font-bold text-white mb-6">{{ texts['update'][lang] }}</h3>
+<div id="editModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-sm rounded-3xl shadow-2xl p-8 relative transition-colors duration-300">
+        <button onclick="document.getElementById('editModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">{{ texts['update'][lang] }}</h3>
         <form id="editForm" method="POST" class="space-y-4">
             <input type="hidden" name="t_id" value="{{ tenant.id }}">
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['amount'][lang] }}</label>
-                <input type="number" step="0.01" name="new_total" id="editTotal" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['amount'][lang] }}</label>
+                <input type="number" step="0.01" name="new_total" id="editTotal" required class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal outline-none transition-colors text-lg font-bold">
             </div>
-            <button type="submit" class="w-full py-3 bg-slate-600 hover:bg-slate-500 text-white font-bold rounded-xl transition-all">
+            <button type="submit" class="w-full py-4 bg-slate-800 hover:bg-slate-700 text-white font-bold rounded-xl transition-all shadow-lg">
                 {{ texts['update'][lang] }}
             </button>
         </form>
