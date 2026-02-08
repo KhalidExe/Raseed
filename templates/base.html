@@ -1,57 +1,85 @@
 <!DOCTYPE html>
-<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}">
+<html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>{{ texts['app_name'][lang] }} | SaaS</title>
-    <script src="https://cdn.tailwindcss.com"></script>
+    
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
-    <style>
-        html { background-color: #0f172a; }
-        body { 
-            font-family: 'Tajawal', sans-serif;
-            background-color: #0f172a;
-            color: #f8fafc;
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
+    
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script>
+        tailwind.config = {
+            darkMode: 'class', // Enable manual dark mode toggle
+            theme: {
+                extend: {
+                    colors: {
+                        brand: {
+                            dark: '#0B1120',      // Deep Navy (Background)
+                            primary: '#0F172A',   // Slate-900 (Cards)
+                            teal: '#10B981',      // Brand Teal (Logo/Accents)
+                            orange: '#F97316',    // Brand Orange (Charts/Alerts)
+                            light: '#F3F4F6',     // Light Gray (Light Mode Background)
+                        }
+                    },
+                    fontFamily: {
+                        sans: ['Tajawal', 'sans-serif'],
+                    }
+                }
+            }
         }
-    </style>
+    </script>
+
+    <script>
+        // Check local storage or system preference on load
+        if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            document.documentElement.classList.add('dark');
+        } else {
+            document.documentElement.classList.remove('dark');
+        }
+    </script>
+    
+    <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
+    <meta name="theme-color" content="#0F172A">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    
     {% block head %}{% endblock %}
 </head>
-<body>
+<body class="bg-brand-light dark:bg-brand-dark text-slate-800 dark:text-slate-200 transition-colors duration-300 min-h-screen flex flex-col">
     
-    <nav class="w-full z-50 p-6 border-b border-slate-800/50 bg-slate-900/50 backdrop-blur-md sticky top-0">
+    <nav class="w-full z-50 p-4 border-b border-slate-200 dark:border-slate-800 bg-white/80 dark:bg-slate-900/80 backdrop-blur-md sticky top-0 transition-colors duration-300">
         <div class="container mx-auto flex justify-between items-center">
-            <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-white hover:text-blue-400 transition-colors">
-                <span class="text-3xl drop-shadow-lg">💳</span> 
-                <span class="drop-shadow-lg">{{ texts['app_name'][lang] }}</span>
+            
+            <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-brand-teal hover:text-emerald-500 transition-colors">
+                <span class="text-3xl drop-shadow-sm">💳</span> 
+                <span>{{ texts['app_name'][lang] }}</span>
             </a>
             
-            <div class="flex items-center gap-4">
+            <div class="flex items-center gap-3">
+                
+                <button id="theme-toggle" class="p-2 rounded-lg bg-slate-100 dark:bg-slate-800 text-slate-500 dark:text-slate-400 hover:bg-slate-200 dark:hover:bg-slate-700 transition-all">
+                    <svg id="theme-toggle-light-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M10 2a1 1 0 011 1v1a1 1 0 11-2 0V3a1 1 0 011-1zm4 8a4 4 0 11-8 0 4 4 0 018 0zm-.464 4.95l.707.707a1 1 0 001.414-1.414l-.707-.707a1 1 0 00-1.414 1.414zm2.12-10.607a1 1 0 010 1.414l-.706.707a1 1 0 11-1.414-1.414l.707-.707a1 1 0 011.414 0zM17 11a1 1 0 100-2h-1a1 1 0 100 2h1zm-7 4a1 1 0 011 1v1a1 1 0 11-2 0v-1a1 1 0 011-1zM5.05 6.464A1 1 0 106.465 5.05l-.708-.707a1 1 0 00-1.414 1.414l.707.707zm1.414 8.486l-.707.707a1 1 0 01-1.414-1.414l.707-.707a1 1 0 011.414 1.414zM4 11a1 1 0 100-2H3a1 1 0 000 2h1z" fill-rule="evenodd" clip-rule="evenodd"></path></svg>
+                    <svg id="theme-toggle-dark-icon" class="hidden w-5 h-5" fill="currentColor" viewBox="0 0 20 20"><path d="M17.293 13.293A8 8 0 016.707 2.707a8.001 8.001 0 1010.586 10.586z"></path></svg>
+                </button>
+
                 <a href="{{ url_for('set_language', lang_code='en' if lang == 'ar' else 'ar') }}" 
-                   class="text-xs font-bold text-slate-400 hover:text-white border border-slate-700 px-3 py-1.5 rounded-lg transition-colors">
+                   class="text-xs font-bold text-slate-500 dark:text-slate-400 hover:text-brand-teal border border-slate-200 dark:border-slate-700 px-3 py-2 rounded-lg transition-colors">
                    {{ texts['lang_switch'][lang] }}
                 </a>
 
                 {% if current_user.is_authenticated %}
-                    <a href="/dashboard" class="hidden md:block text-sm font-bold text-slate-300 hover:text-white transition-colors">
+                    <a href="/dashboard" class="hidden md:block text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-brand-teal transition-colors">
                         {{ texts['dashboard'][lang] }}
                     </a>
-                    <span class="hidden md:block text-slate-600">|</span>
-                    <div class="flex items-center gap-3">
-                        <span class="text-xs font-bold text-blue-400 bg-blue-900/20 px-3 py-1.5 rounded-full border border-blue-500/20">
-                            {{ current_user.name }}
-                        </span>
-                        <a href="/logout" class="text-xs font-bold text-rose-400 hover:text-rose-300 bg-rose-900/10 hover:bg-rose-900/30 px-3 py-1.5 rounded-lg transition-all">
-                            {{ texts['logout'][lang] }}
-                        </a>
-                    </div>
+                    <span class="hidden md:block text-slate-300 dark:text-slate-700">|</span>
+                    <a href="/logout" class="text-xs font-bold text-rose-500 hover:text-rose-600 bg-rose-50 dark:bg-rose-900/10 px-3 py-2 rounded-lg transition-all">
+                        {{ texts['logout'][lang] }}
+                    </a>
                 {% else %}
-                    <a href="/login" class="text-sm font-bold text-slate-300 hover:text-white transition-colors">
+                    <a href="/login" class="text-sm font-bold text-slate-600 dark:text-slate-300 hover:text-brand-teal transition-colors">
                         {{ texts['login'][lang] }}
                     </a>
-                    <a href="/signup" class="text-xs font-bold bg-blue-600 hover:bg-blue-500 text-white px-4 py-2 rounded-lg transition-all shadow-lg shadow-blue-900/20">
+                    <a href="/signup" class="text-xs font-bold bg-brand-teal hover:bg-emerald-600 text-white px-4 py-2 rounded-lg transition-all shadow-lg shadow-emerald-500/20">
                         {{ texts['signup'][lang] }}
                     </a>
                 {% endif %}
@@ -64,7 +92,10 @@
         {% with messages = get_flashed_messages(with_categories=true) %}
             {% if messages %}
                 {% for category, message in messages %}
-                <div class="mb-4 p-4 rounded-xl border max-w-2xl mx-auto text-center font-bold {% if category == 'success' %}bg-emerald-900/20 border-emerald-500/20 text-emerald-400{% elif category == 'danger' %}bg-rose-900/20 border-rose-500/20 text-rose-400{% else %}bg-blue-900/20 border-blue-500/20 text-blue-400{% endif %}">
+                <div class="mb-4 p-4 rounded-xl border max-w-2xl mx-auto text-center font-bold shadow-sm
+                    {% if category == 'success' %} bg-emerald-50 text-emerald-600 border-emerald-200 dark:bg-emerald-900/20 dark:border-emerald-500/20 dark:text-emerald-400
+                    {% elif category == 'danger' %} bg-rose-50 text-rose-600 border-rose-200 dark:bg-rose-900/20 dark:border-rose-500/20 dark:text-rose-400
+                    {% else %} bg-blue-50 text-blue-600 border-blue-200 dark:bg-blue-900/20 dark:border-blue-500/20 dark:text-blue-400 {% endif %}">
                     {{ message }}
                 </div>
                 {% endfor %}
@@ -74,9 +105,46 @@
         {% block content %}{% endblock %}
     </main>
 
-    <footer class="py-8 text-center text-slate-500 text-xs mt-auto border-t border-slate-800/50">
+    <footer class="py-8 text-center text-slate-400 dark:text-slate-600 text-xs mt-auto border-t border-slate-200 dark:border-slate-800">
         <p>&copy; 2026 {{ texts['app_name'][lang] }} SaaS | All Rights Reserved</p>
     </footer>
 
+    <script>
+        var themeToggleBtn = document.getElementById('theme-toggle');
+        var darkIcon = document.getElementById('theme-toggle-dark-icon');
+        var lightIcon = document.getElementById('theme-toggle-light-icon');
+
+        // Change the icons inside the button based on previous settings
+        if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
+            lightIcon.classList.remove('hidden');
+        } else {
+            darkIcon.classList.remove('hidden');
+        }
+
+        themeToggleBtn.addEventListener('click', function() {
+            // Toggle icons
+            darkIcon.classList.toggle('hidden');
+            lightIcon.classList.toggle('hidden');
+
+            // If is set via local storage previously
+            if (localStorage.getItem('theme')) {
+                if (localStorage.getItem('theme') === 'light') {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                } else {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                }
+            } else {
+                if (document.documentElement.classList.contains('dark')) {
+                    document.documentElement.classList.remove('dark');
+                    localStorage.setItem('theme', 'light');
+                } else {
+                    document.documentElement.classList.add('dark');
+                    localStorage.setItem('theme', 'dark');
+                }
+            }
+        });
+    </script>
 </body>
 </html>
