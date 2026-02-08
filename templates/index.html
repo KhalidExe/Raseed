@@ -8,56 +8,57 @@
 <div class="container mx-auto px-4 py-8">
     
     <div class="grid grid-cols-1 md:grid-cols-2 gap-6 mb-8">
-        <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl">
-            <h2 class="text-2xl font-bold text-white mb-4">
-                {{ texts['welcome'][lang] }}، {{ current_user.name }} 👋
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm transition-colors duration-300">
+            <h2 class="text-2xl font-bold text-slate-900 dark:text-white mb-6">
+                {{ texts['welcome'][lang] }}، <span class="text-brand-teal">{{ current_user.name }}</span> 👋
             </h2>
             <div class="grid grid-cols-2 gap-4">
-                <div class="bg-emerald-900/20 p-4 rounded-2xl border border-emerald-500/20">
-                    <p class="text-slate-400 text-xs font-bold mb-1">{{ texts['total_paid'][lang] }}</p>
-                    <p class="text-2xl font-black text-emerald-400">
-                        {{ "{:,.0f}".format(financials.total_paid) }} <span class="text-sm font-normal">SAR</span>
+                <div class="bg-emerald-50 dark:bg-emerald-900/20 p-5 rounded-2xl border border-emerald-100 dark:border-emerald-500/20">
+                    <p class="text-emerald-600 dark:text-emerald-400 text-xs font-bold mb-1 uppercase tracking-wider">{{ texts['total_paid'][lang] }}</p>
+                    <p class="text-3xl font-black text-emerald-600 dark:text-emerald-400">
+                        {{ "{:,.0f}".format(financials.total_paid) }} <span class="text-sm font-medium opacity-60">SAR</span>
                     </p>
                 </div>
-                <div class="bg-rose-900/20 p-4 rounded-2xl border border-rose-500/20">
-                    <p class="text-slate-400 text-xs font-bold mb-1">{{ texts['total_remaining'][lang] }}</p>
-                    <p class="text-2xl font-black text-rose-400">
-                        {{ "{:,.0f}".format(financials.total_remaining) }} <span class="text-sm font-normal">SAR</span>
+                <div class="bg-orange-50 dark:bg-orange-900/20 p-5 rounded-2xl border border-orange-100 dark:border-orange-500/20">
+                    <p class="text-orange-600 dark:text-orange-400 text-xs font-bold mb-1 uppercase tracking-wider">{{ texts['total_remaining'][lang] }}</p>
+                    <p class="text-3xl font-black text-orange-600 dark:text-orange-400">
+                        {{ "{:,.0f}".format(financials.total_remaining) }} <span class="text-sm font-medium opacity-60">SAR</span>
                     </p>
                 </div>
             </div>
-            <div class="mt-6">
-                 <a href="#addTenantModal" onclick="document.getElementById('addTenantModal').classList.remove('hidden')" class="block w-full text-center py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all">
+            <div class="mt-8">
+                 <a href="#addTenantModal" onclick="document.getElementById('addTenantModal').classList.remove('hidden')" class="block w-full text-center py-4 bg-brand-teal hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 hover:-translate-y-0.5">
                     + {{ texts['add_tenant'][lang] }}
                 </a>
             </div>
         </div>
 
-        <div class="bg-slate-800 p-6 rounded-3xl border border-slate-700 shadow-xl flex items-center justify-center relative">
-            <div class="w-64 h-64">
+        <div class="bg-white dark:bg-slate-800 p-8 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm flex flex-col items-center justify-center relative transition-colors duration-300">
+            <h3 class="text-slate-500 dark:text-slate-400 font-bold text-sm mb-4 w-full text-start">{{ texts['financial_record'][lang] }}</h3>
+            <div class="w-64 h-64 relative">
                 <canvas id="financeChart"></canvas>
-            </div>
-            <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
-                <span class="text-slate-600 font-black text-xl opacity-20">Raseed</span>
+                <div class="absolute inset-0 flex items-center justify-center pointer-events-none">
+                    <span class="text-slate-300 dark:text-slate-700 font-black text-2xl opacity-50">RJ</span>
+                </div>
             </div>
         </div>
     </div>
 
     {% if alerts %}
     <div class="mb-8">
-        <h3 class="text-xl font-bold text-white mb-4 flex items-center gap-2">
-            🔔 {{ texts['alerts'][lang] }} <span class="text-xs bg-rose-600 text-white px-2 py-1 rounded-full">{{ alerts|length }}</span>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-4 flex items-center gap-2">
+            🔔 {{ texts['alerts'][lang] }} <span class="text-xs bg-brand-orange text-white px-2 py-0.5 rounded-full">{{ alerts|length }}</span>
         </h3>
         <div class="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
             {% for alert in alerts %}
-            <div class="bg-slate-800 p-4 rounded-2xl border-l-4 border-rose-500 shadow-lg flex justify-between items-center">
+            <div class="bg-white dark:bg-slate-800 p-5 rounded-2xl border-l-4 border-brand-orange shadow-sm dark:shadow-none border-y border-r border-slate-200 dark:border-slate-700 flex justify-between items-center transition-colors">
                 <div>
-                    <h4 class="font-bold text-white">{{ alert.name }}</h4>
-                    <p class="text-slate-400 text-sm">{{ alert.unit_name }}</p>
+                    <h4 class="font-bold text-slate-900 dark:text-white">{{ alert.name }}</h4>
+                    <p class="text-slate-500 text-sm">{{ alert.unit_name }}</p>
                 </div>
-                <div class="text-left">
-                    <p class="text-rose-400 font-bold">{{ alert.remaining }} SAR</p>
-                    <p class="text-slate-500 text-xs">{{ alert.due_date }}</p>
+                <div class="text-end">
+                    <p class="text-brand-orange font-bold">{{ alert.remaining }} SAR</p>
+                    <p class="text-slate-400 text-xs">{{ alert.due_date }}</p>
                 </div>
             </div>
             {% endfor %}
@@ -65,36 +66,36 @@
     </div>
     {% endif %}
 
-    <div class="bg-slate-800 rounded-3xl border border-slate-700 shadow-xl overflow-hidden">
-        <div class="p-6 border-b border-slate-700 flex justify-between items-center">
-            <h3 class="text-xl font-bold text-white">{{ texts['tenant_list'][lang] }}</h3>
+    <div class="bg-white dark:bg-slate-800 rounded-3xl border border-slate-200 dark:border-slate-700 shadow-sm overflow-hidden transition-colors duration-300">
+        <div class="p-6 border-b border-slate-100 dark:border-slate-700/50 flex justify-between items-center">
+            <h3 class="text-xl font-bold text-slate-900 dark:text-white">{{ texts['tenant_list'][lang] }}</h3>
         </div>
         
         <div class="overflow-x-auto">
-            <table class="w-full text-right text-slate-300">
-                <thead class="bg-slate-900/50 text-slate-400 font-bold uppercase text-xs">
+            <table class="w-full text-right text-slate-600 dark:text-slate-300">
+                <thead class="bg-slate-50 dark:bg-slate-900/50 text-slate-500 dark:text-slate-400 font-bold uppercase text-xs tracking-wider">
                     <tr>
-                        <th class="p-4 text-start">{{ texts['tenant_name'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['unit_name'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['progress'][lang] }}</th>
-                        <th class="p-4 text-start">{{ texts['actions'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['tenant_name'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['unit_name'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['progress'][lang] }}</th>
+                        <th class="p-5 text-start">{{ texts['actions'][lang] }}</th>
                     </tr>
                 </thead>
-                <tbody class="divide-y divide-slate-700">
+                <tbody class="divide-y divide-slate-100 dark:divide-slate-700">
                     {% for tenant in tenants %}
-                    <tr class="hover:bg-slate-700/50 transition-colors">
-                        <td class="p-4 font-bold text-white text-start">{{ tenant.name }}</td>
-                        <td class="p-4 text-start">{{ tenant.unit_name }}</td>
-                        <td class="p-4 text-start">
-                            <span class="bg-slate-700 text-white px-3 py-1 rounded-full text-xs font-bold">
+                    <tr class="hover:bg-slate-50 dark:hover:bg-slate-700/50 transition-colors">
+                        <td class="p-5 font-bold text-slate-900 dark:text-white text-start">{{ tenant.name }}</td>
+                        <td class="p-5 text-start">{{ tenant.unit_name }}</td>
+                        <td class="p-5 text-start">
+                            <span class="bg-slate-100 dark:bg-slate-700 text-slate-600 dark:text-slate-300 px-3 py-1 rounded-full text-xs font-bold">
                                 {{ tenant.completed_installments }} / {{ tenant.total_installments }}
                             </span>
                         </td>
-                        <td class="p-4 flex gap-2 text-start">
-                            <a href="{{ url_for('tenant_details', t_id=tenant.id) }}" class="bg-blue-600/20 hover:bg-blue-600 text-blue-400 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all">
+                        <td class="p-5 flex gap-2 text-start">
+                            <a href="{{ url_for('tenant_details', t_id=tenant.id) }}" class="bg-blue-50 hover:bg-blue-100 dark:bg-blue-900/20 dark:hover:bg-blue-900/30 text-blue-600 dark:text-blue-400 px-4 py-2 rounded-xl text-sm font-bold transition-all">
                                 {{ texts['details'][lang] }}
                             </a>
-                            <a href="{{ url_for('delete_tenant', t_id=tenant.id) }}" onclick="return confirm('Confirm delete?')" class="bg-rose-600/20 hover:bg-rose-600 text-rose-400 hover:text-white px-4 py-2 rounded-xl text-sm font-bold transition-all">
+                            <a href="{{ url_for('delete_tenant', t_id=tenant.id) }}" onclick="return confirm('Confirm delete?')" class="bg-rose-50 hover:bg-rose-100 dark:bg-rose-900/20 dark:hover:bg-rose-900/30 text-rose-500 dark:text-rose-400 px-4 py-2 rounded-xl text-sm font-bold transition-all">
                                 {{ texts['delete'][lang] }}
                             </a>
                         </td>
@@ -103,7 +104,7 @@
                 </tbody>
             </table>
             {% if not tenants %}
-            <div class="p-8 text-center text-slate-500">
+            <div class="p-12 text-center text-slate-400 dark:text-slate-500">
                 {{ texts['no_tenants'][lang] }}
             </div>
             {% endif %}
@@ -111,20 +112,20 @@
     </div>
 </div>
 
-<div id="addTenantModal" class="fixed inset-0 bg-slate-900/80 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
-    <div class="bg-slate-800 w-full max-w-md rounded-3xl border border-slate-700 shadow-2xl p-6 relative">
-        <button onclick="document.getElementById('addTenantModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-white">✕</button>
-        <h3 class="text-xl font-bold text-white mb-6">{{ texts['add_tenant'][lang] }}</h3>
+<div id="addTenantModal" class="fixed inset-0 bg-slate-900/50 backdrop-blur-sm hidden z-50 flex items-center justify-center p-4">
+    <div class="bg-white dark:bg-slate-800 w-full max-w-md rounded-3xl shadow-2xl p-8 relative transition-colors duration-300">
+        <button onclick="document.getElementById('addTenantModal').classList.add('hidden')" class="absolute top-4 right-4 rtl:left-4 rtl:right-auto text-slate-400 hover:text-slate-600 dark:hover:text-white">✕</button>
+        <h3 class="text-xl font-bold text-slate-900 dark:text-white mb-6">{{ texts['add_tenant'][lang] }}</h3>
         <form action="/add_tenant" method="POST" class="space-y-4">
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['tenant_name'][lang] }}</label>
-                <input type="text" name="name" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['tenant_name'][lang] }}</label>
+                <input type="text" name="name" required class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal outline-none transition-colors">
             </div>
             <div>
-                <label class="block text-slate-400 text-xs font-bold mb-1">{{ texts['unit_name'][lang] }}</label>
-                <input type="text" name="unit" required class="w-full p-3 bg-slate-900 border border-slate-700 rounded-xl text-white focus:border-blue-500 outline-none">
+                <label class="block text-slate-500 dark:text-slate-400 text-xs font-bold mb-1">{{ texts['unit_name'][lang] }}</label>
+                <input type="text" name="unit" required class="w-full p-3 bg-slate-50 dark:bg-slate-900 border border-slate-200 dark:border-slate-700 rounded-xl text-slate-900 dark:text-white focus:border-brand-teal outline-none transition-colors">
             </div>
-            <button type="submit" class="w-full py-3 bg-blue-600 hover:bg-blue-500 text-white font-bold rounded-xl transition-all shadow-lg shadow-blue-900/20 mt-2">
+            <button type="submit" class="w-full py-3 bg-brand-teal hover:bg-emerald-600 text-white font-bold rounded-xl transition-all shadow-lg shadow-emerald-500/20 mt-2">
                 {{ texts['update'][lang] }}
             </button>
         </form>
@@ -137,22 +138,23 @@
     const paid = {{ financials.total_paid }};
     const remaining = {{ financials.total_remaining }};
     
-    // Translation strings from Jinja to JS
     const labelPaid = "{{ texts['total_paid'][lang] }}";
     const labelRemaining = "{{ texts['total_remaining'][lang] }}";
 
-    const dataValues = (paid === 0 && remaining === 0) ? [1, 1] : [paid, remaining];
-    const bgColors = (paid === 0 && remaining === 0) ? ['#334155', '#1e293b'] : ['#10b981', '#f43f5e'];
+    // Colors matching the new brand identity (Teal & Orange)
+    const bgColors = (paid === 0 && remaining === 0) 
+        ? ['#e2e8f0', '#cbd5e1'] // Light gray for empty state
+        : ['#10B981', '#F97316']; // Brand Teal, Brand Orange
 
     new Chart(ctx, {
         type: 'doughnut',
         data: {
             labels: [labelPaid, labelRemaining],
             datasets: [{
-                data: dataValues,
+                data: (paid === 0 && remaining === 0) ? [1, 1] : [paid, remaining],
                 backgroundColor: bgColors,
                 borderWidth: 0,
-                hoverOffset: 4
+                hoverOffset: 10
             }]
         },
         options: {
@@ -161,10 +163,19 @@
             plugins: {
                 legend: {
                     position: 'bottom',
-                    labels: { color: '#94a3b8', font: { family: 'Tajawal' } }
+                    labels: { 
+                        color: '#64748b', // Slate-500 (works on both light/dark)
+                        font: { family: 'Tajawal', weight: 'bold' },
+                        padding: 20,
+                        usePointStyle: true
+                    }
                 }
             },
-            cutout: '70%',
+            cutout: '75%',
+            animation: {
+                animateScale: true,
+                animateRotate: true
+            }
         }
     });
 </script>
