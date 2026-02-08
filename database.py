@@ -1,9 +1,11 @@
 from flask_sqlalchemy import SQLAlchemy
 from flask_login import UserMixin
 from datetime import datetime, timedelta
-from werkzeug.security import generate_password_hash, check_password_hash
+from sqlalchemy.sql import func
 
 db = SQLAlchemy()
+
+# --- Models ---
 
 class User(UserMixin, db.Model):
     __tablename__ = 'users'
@@ -11,13 +13,7 @@ class User(UserMixin, db.Model):
     name = db.Column(db.String(100))
     email = db.Column(db.String(100), unique=True, nullable=False)
     password_hash = db.Column(db.String(200))
-    tenants = db.relationship('Tenant', backref='owner', lazy=True)
-
-    def set_password(self, password):
-        self.password_hash = generate_password_hash(password)
-
-    def check_password(self, password):
-        return check_password_hash(self.password_hash, password)
+    tenants = db.relationship('Tenant', backref='landlord', lazy=True)
 
 class Tenant(db.Model):
     __tablename__ = 'tenants'
@@ -26,18 +22,7 @@ class Tenant(db.Model):
     name = db.Column(db.String(100), nullable=False)
     unit_name = db.Column(db.String(50), nullable=False)
     created_at = db.Column(db.DateTime, default=datetime.utcnow)
-    installments = db.relationship('Installment', backref='tenant', cascade='all, delete-orphan')
-
-    def to_dict(self):
-        total = len(self.installments)
-        completed = sum(1 for i in self.installments if (i.amount - i.paid) <= 0.1)
-        return {
-            'id': self.id,
-            'name': self.name,
-            'unit_name': self.unit_name,
-            'total_installments': total,
-            'completed_installments': completed
-        }
+    installments = db.relationship('Installment', backref='tenant', cascade="all, delete-orphan", lazy=True)
 
 class Installment(db.Model):
     __tablename__ = 'installments'
@@ -47,100 +32,130 @@ class Installment(db.Model):
     amount = db.Column(db.Float, nullable=False)
     paid = db.Column(db.Float, default=0.0)
 
-    def to_dict(self):
-        return {
-            'id': self.id,
-            'tenant_id': self.tenant_id,
-            'due_date': self.due_date.strftime('%Y-%m-%d'),
-            'amount': self.amount,
-            'paid': self.paid
-        }
+# --- Initialization ---
 
 def init_db(app):
     db.init_app(app)
     with app.app_context():
         db.create_all()
-        # Create a dummy user for testing if not exists
-        if not User.query.first():
-            dummy = User(name="Demo User", email="demo@raseed.com")
-            dummy.set_password("123456")
-            db.session.add(dummy)
-            db.session.commit()
 
-def add_tenant(user_id, name, unit):
-    try:
-        # Check if tenant name exists for THIS user
-        exists = Tenant.query.filter_by(user_id=user_id, name=name).first()
-        if exists:
-            return False
-            
-        new_tenant = Tenant(user_id=user_id, name=name, unit_name=unit)
-        db.session.add(new_tenant)
-        db.session.commit()
-        return True
-    except:
-        db.session.rollback()
-        return False
+# --- Operations ---
 
 def get_dashboard_data(user_id):
-    tenants_objs = Tenant.query.filter_by(user_id=user_id).order_by(Tenant.created_at.desc()).all()
-    tenants = [t.to_dict() for t in tenants_objs]
+    """Fetch tenants and upcoming payment alerts for a specific user."""
+    # 1. Get user's tenants with installment progress
+    tenants = Tenant.query.filter_by(user_id=user_id).all()
+    tenant_data = []
     
-    target_date = datetime.now().date() + timedelta(days=15)
-    
-    upcoming_installments = db.session.query(Installment, Tenant).join(Tenant).filter(
-        Tenant.user_id == user_id,
-        Installment.due_date <= target_date,
-        (Installment.amount - Installment.paid) > 1
-    ).order_by(Installment.due_date).all()
-    
-    alerts = []
-    for inst, ten in upcoming_installments:
-        alerts.append({
-            'name': ten.name,
-            'unit_name': ten.unit_name,
-            'due_date': inst.due_date.strftime('%Y-%m-%d'),
-            'remaining': inst.amount - inst.paid
+    for t in tenants:
+        total_inst = len(t.installments)
+        completed_inst = sum(1 for i in t.installments if i.paid >= i.amount)
+        tenant_data.append({
+            'id': t.id,
+            'name': t.name,
+            'unit_name': t.unit_name,
+            'total_installments': total_inst,
+            'completed_installments': completed_inst
         })
+
+    # 2. Get alerts (payments due within 15 days)
+    today = datetime.today().date()
+    warning_date = today + timedelta(days=15)
+    
+    alerts_query = db.session.query(Installment, Tenant).join(Tenant).filter(
+        Tenant.user_id == user_id,
+        Installment.paid < Installment.amount,
+        Installment.due_date <= warning_date
+    ).all()
+
+    alerts_data = [{
+        'name': t.name,
+        'unit_name': t.unit_name,
+        'remaining': i.amount - i.paid,
+        'due_date': i.due_date.strftime('%Y-%m-%d')
+    } for i, t in alerts_query]
+
+    return tenant_data, alerts_data
+
+def get_financial_summary(user_id):
+    """Calculate total paid and remaining amounts for the user's properties."""
+    installments = db.session.query(Installment).join(Tenant).filter(Tenant.user_id == user_id).all()
+    
+    total_paid = 0
+    total_remaining = 0
+
+    for inst in installments:
+        paid_val = inst.paid if inst.paid is not None else 0.0
+        amount_val = inst.amount if inst.amount is not None else 0.0
         
-    return tenants, alerts
+        total_paid += paid_val
+        total_remaining += (amount_val - paid_val)
+    
+    return {
+        'total_paid': total_paid,
+        'total_remaining': total_remaining
+    }
 
-def delete_tenant(t_id, user_id):
-    tenant = Tenant.query.filter_by(id=t_id, user_id=user_id).first()
-    if tenant:
-        db.session.delete(tenant)
-        db.session.commit()
+def add_tenant(user_id, name, unit):
+    """Add a new tenant if the name doesn't exist for this user."""
+    existing = Tenant.query.filter_by(user_id=user_id, name=name).first()
+    if existing:
+        return False
+    
+    new_tenant = Tenant(user_id=user_id, name=name, unit_name=unit)
+    db.session.add(new_tenant)
+    db.session.commit()
+    return True
 
-def get_tenant_details(t_id, user_id):
-    tenant_obj = Tenant.query.filter_by(id=t_id, user_id=user_id).first()
-    if not tenant_obj:
-        return None, []
+def get_tenant_details(tenant_id, user_id):
+    """Get tenant object and their installments securely."""
+    tenant = Tenant.query.filter_by(id=tenant_id, user_id=user_id).first()
+    if not tenant:
+        return None, None
     
-    inst_objs = Installment.query.filter_by(tenant_id=t_id).order_by(Installment.due_date).all()
+    installments_data = [{
+        'id': i.id,
+        'date': i.due_date.strftime('%Y-%m-%d'),
+        'amount': i.amount,
+        'paid': i.paid
+    } for i in tenant.installments]
     
-    tenant = tenant_obj.to_dict()
-    installments = [i.to_dict() for i in inst_objs]
+    # Sort by date
+    installments_data.sort(key=lambda x: x['date'])
     
-    return tenant, installments
+    return tenant, installments_data
 
 def add_installments_from_excel(tenant_id, data_list):
+    """Bulk add installments. data_list = [(date_str, amount), ...]"""
     for date_val, amount in data_list:
-        if isinstance(date_val, str):
-            date_obj = datetime.strptime(date_val, '%Y-%m-%d').date()
-        elif isinstance(date_val, datetime):
-            date_obj = date_val.date()
-        else:
+        try:
+            # Handle various date formats potentially coming from Excel
+            if isinstance(date_val, str):
+                d_obj = datetime.strptime(date_val, '%Y-%m-%d').date()
+            else:
+                d_obj = date_val.date() # Assume it's a datetime object
+            
+            new_inst = Installment(tenant_id=tenant_id, due_date=d_obj, amount=float(amount))
+            db.session.add(new_inst)
+        except Exception as e:
+            print(f"Skipping row due to error: {e}")
             continue
             
-        new_inst = Installment(tenant_id=tenant_id, due_date=date_obj, amount=float(amount), paid=0)
-        db.session.add(new_inst)
     db.session.commit()
 
-def update_installment(inst_id, amount=None, paid=None):
+def update_installment(inst_id, paid=None, amount=None):
+    """Update payment or total amount for an installment."""
     inst = Installment.query.get(inst_id)
     if inst:
-        if amount is not None:
-            inst.amount = amount
         if paid is not None:
             inst.paid = paid
+        if amount is not None:
+            inst.amount = amount
+        db.session.commit()
+
+def delete_tenant(tenant_id, user_id):
+    """Delete a tenant and all associated data."""
+    tenant = Tenant.query.filter_by(id=tenant_id, user_id=user_id).first()
+    if tenant:
+        db.session.delete(tenant)
         db.session.commit()
