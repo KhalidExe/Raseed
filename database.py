@@ -58,22 +58,37 @@ def get_dashboard_data(user_id):
             'completed_installments': completed_inst
         })
 
-    # 2. Get alerts (payments due within 15 days)
+    # 2. Get alerts (payments due within 15 days OR Overdue)
     today = datetime.today().date()
     warning_date = today + timedelta(days=15)
     
+    # نجلب الدفعات غير المكتملة والتي تاريخها اليوم أو قبل 15 يوم (يشمل المتأخرات)
     alerts_query = db.session.query(Installment, Tenant).join(Tenant).filter(
         Tenant.user_id == user_id,
         Installment.paid < Installment.amount,
         Installment.due_date <= warning_date
-    ).all()
+    ).order_by(Installment.due_date).all() # ترتيب حسب التاريخ
 
-    alerts_data = [{
-        'name': t.name,
-        'unit_name': t.unit_name,
-        'remaining': i.amount - i.paid,
-        'due_date': i.due_date.strftime('%Y-%m-%d')
-    } for i, t in alerts_query]
+    alerts_data = []
+    for i, t in alerts_query:
+        days_diff = (i.due_date - today).days
+        
+        # تصنيف الحالة
+        if days_diff < 0:
+            status = 'overdue' # أحمر
+            days_label = abs(days_diff) # عدد أيام التأخير
+        else:
+            status = 'upcoming' # برتقالي
+            days_label = days_diff # عدد الأيام المتبقية
+
+        alerts_data.append({
+            'name': t.name,
+            'unit_name': t.unit_name,
+            'remaining': i.amount - i.paid,
+            'due_date': i.due_date.strftime('%Y-%m-%d'),
+            'status': status,      # overdue or upcoming
+            'days_diff': days_label # Number of days
+        })
 
     return tenant_data, alerts_data
 
