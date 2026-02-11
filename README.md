@@ -1,6 +1,6 @@
 # 💳 Raseed | رصيد
 
-![Version](https://img.shields.io/badge/Release-v2.3.0-teal?style=for-the-badge)
+![Version](https://img.shields.io/badge/Release-v2.3.1-orange?style=for-the-badge)
 ![PWA](https://img.shields.io/badge/PWA-Ready-purple?style=for-the-badge&logo=pwa&logoColor=white)
 ![Theme](https://img.shields.io/badge/Theme-Light%20%26%20Dark-0f172a?style=for-the-badge)
 ![Python](https://img.shields.io/badge/Python-3.10+-3776AB?style=for-the-badge&logo=python&logoColor=white)
