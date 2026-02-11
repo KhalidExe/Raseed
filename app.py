@@ -198,5 +198,10 @@ def delete_tenant(t_id):
     flash(get_text('flash_deleted'), 'warning')
     return redirect(url_for('dashboard'))
 
+@app.route('/sw.js')
+def sw():
+    """Serve the service worker file from root to enable PWA scope."""
+    return app.send_static_file('sw.js')
+
 if __name__ == '__main__':
     app.run(debug=True, port=5000)
