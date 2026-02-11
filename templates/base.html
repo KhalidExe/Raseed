@@ -2,7 +2,7 @@
 <html lang="{{ lang }}" dir="{{ 'rtl' if lang == 'ar' else 'ltr' }}" class="dark">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>{{ texts['app_name'][lang] }} | SaaS</title>
     
     <link href="https://fonts.googleapis.com/css2?family=Tajawal:wght@400;500;700;800&display=swap" rel="stylesheet">
@@ -40,9 +40,22 @@
     </script>
     
     <link rel="manifest" href="{{ url_for('static', filename='manifest.json') }}">
-    <meta name="theme-color" content="#0F172A">
+    <link rel="icon" type="image/png" href="{{ url_for('static', filename='favicon.png') }}">
+    <link rel="apple-touch-icon" href="{{ url_for('static', filename='icons/icon-192.png') }}">
+    <meta name="theme-color" content="#0B1120">
     <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
     
+    <script>
+        if ('serviceWorker' in navigator) {
+            window.addEventListener('load', () => {
+                navigator.serviceWorker.register('/sw.js')
+                    .then(reg => console.log('SW Registered!', reg))
+                    .catch(err => console.log('SW Failed!', err));
+            });
+        }
+    </script>
+
     {% block head %}{% endblock %}
 </head>
 <body class="bg-brand-light dark:bg-brand-dark text-slate-800 dark:text-slate-200 transition-colors duration-300 min-h-screen flex flex-col">
@@ -51,7 +64,7 @@
         <div class="container mx-auto flex justify-between items-center">
             
             <a href="/" class="text-2xl font-black flex items-center gap-2 tracking-wide text-brand-teal hover:text-emerald-500 transition-colors">
-                <span class="text-3xl drop-shadow-sm">💳</span> 
+                <img src="{{ url_for('static', filename='favicon.png') }}" class="w-8 h-8 rounded-lg shadow-sm" alt="Logo">
                 <span>{{ texts['app_name'][lang] }}</span>
             </a>
             
