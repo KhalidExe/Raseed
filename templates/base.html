@@ -30,6 +30,15 @@
         }
     </script>
 
+    <style>
+        /* Custom Webkit Scrollbar */
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: transparent; }
+        ::-webkit-scrollbar-thumb { background: #cbd5e1; border-radius: 4px; }
+        .dark ::-webkit-scrollbar-thumb { background: #334155; }
+        ::-webkit-scrollbar-thumb:hover { background: #10B981; } /* Brand Teal on hover */
+    </style>
+
     <script>
         // Check local storage or system preference on load
         if (localStorage.theme === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
@@ -127,7 +136,6 @@
         var darkIcon = document.getElementById('theme-toggle-dark-icon');
         var lightIcon = document.getElementById('theme-toggle-light-icon');
 
-        // Change the icons inside the button based on previous settings
         if (localStorage.getItem('theme') === 'dark' || (!('theme' in localStorage) && window.matchMedia('(prefers-color-scheme: dark)').matches)) {
             lightIcon.classList.remove('hidden');
         } else {
@@ -135,11 +143,8 @@
         }
 
         themeToggleBtn.addEventListener('click', function() {
-            // Toggle icons
             darkIcon.classList.toggle('hidden');
             lightIcon.classList.toggle('hidden');
-
-            // If is set via local storage previously
             if (localStorage.getItem('theme')) {
                 if (localStorage.getItem('theme') === 'light') {
                     document.documentElement.classList.add('dark');
